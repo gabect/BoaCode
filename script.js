@@ -11,6 +11,9 @@ const characterFaces = {
 
 let selectedCharacter = "Robot";
 
+const themeStorageKey = "boacode-theme";
+const themeNames = ["cartoon", "modern", "matrix"];
+
 // These friendly variable names avoid a full variable manager while still
 // letting students practice assignment and reuse values.
 const variableOptions = [
@@ -204,7 +207,28 @@ const dialogueInputForm = document.getElementById("dialogueInputForm");
 const dialogueInputLabel = document.getElementById("dialogueInputLabel");
 const dialogueInput = document.getElementById("dialogueInput");
 const runButton = document.getElementById("runButton");
+const themeButtons = document.querySelectorAll(".theme-button");
 let activeInputResolver = null;
+
+function getSavedTheme() {
+  const savedTheme = localStorage.getItem(themeStorageKey);
+  return themeNames.includes(savedTheme) ? savedTheme : "cartoon";
+}
+
+// Themes are cosmetic only: they swap body classes and leave Blockly/runtime logic unchanged.
+function applyTheme(theme) {
+  const selectedTheme = themeNames.includes(theme) ? theme : "cartoon";
+
+  themeNames.forEach((themeName) => document.body.classList.remove(`theme-${themeName}`));
+  document.body.classList.add(`theme-${selectedTheme}`);
+  localStorage.setItem(themeStorageKey, selectedTheme);
+
+  themeButtons.forEach((button) => {
+    const isSelected = button.dataset.theme === selectedTheme;
+    button.classList.toggle("active", isSelected);
+    button.setAttribute("aria-pressed", String(isSelected));
+  });
+}
 
 function chooseCharacter(character) {
   selectedCharacter = character;
@@ -413,6 +437,10 @@ document.querySelectorAll(".character-card").forEach((card) => {
   card.addEventListener("click", () => chooseCharacter(card.dataset.character));
 });
 
+themeButtons.forEach((button) => {
+  button.addEventListener("click", () => applyTheme(button.dataset.theme));
+});
+
 dialogueInputForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
@@ -427,4 +455,5 @@ dialogueInputForm.addEventListener("submit", (event) => {
 
 runButton.addEventListener("click", runProgram);
 workspace.addChangeListener(updateCodePreview);
+applyTheme(getSavedTheme());
 updateCodePreview();
