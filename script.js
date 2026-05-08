@@ -177,11 +177,18 @@ Blockly.Xml.domToWorkspace(
 
 const codeOutput = document.getElementById("codeOutput");
 const dialogueOutput = document.getElementById("dialogueOutput");
-const speakerBadge = document.getElementById("speakerBadge");
+const speakerAvatar = document.getElementById("speakerAvatar");
+const speakerName = document.getElementById("speakerName");
+const dialogueInputForm = document.getElementById("dialogueInputForm");
+const dialogueInputLabel = document.getElementById("dialogueInputLabel");
+const dialogueInput = document.getElementById("dialogueInput");
+const runButton = document.getElementById("runButton");
+let activeInputResolver = null;
 
 function chooseCharacter(character) {
   selectedCharacter = character;
-  speakerBadge.textContent = `${characterFaces[character]} ${character}`;
+  speakerAvatar.textContent = characterFaces[character];
+  speakerName.textContent = character;
 
   document.querySelectorAll(".character-card").forEach((card) => {
     const isSelected = card.dataset.character === character;
@@ -260,7 +267,33 @@ function updateCodePreview() {
   codeOutput.textContent = lines.length ? lines.join("\n") : "# Add blocks to see code here.";
 }
 
-function evaluateExpression(block, variables) {
+function appendDialogue(text, className = "speech-bubble") {
+  const bubble = document.createElement("div");
+  bubble.className = className;
+  bubble.textContent = text;
+  dialogueOutput.appendChild(bubble);
+  bubble.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function showInputPrompt(promptText) {
+  appendDialogue(promptText, "question-bubble");
+  dialogueInputLabel.textContent = `${selectedCharacter} is asking:`;
+  dialogueInput.placeholder = "Type your reply here";
+  dialogueInput.value = "";
+  dialogueInputForm.classList.remove("hidden");
+  dialogueInput.focus();
+
+  return new Promise((resolve) => {
+    activeInputResolver = resolve;
+  });
+}
+
+function hideInputPrompt() {
+  dialogueInputForm.classList.add("hidden");
+  activeInputResolver = null;
+}
+
+async function evaluateExpression(block, variables) {
   if (!block) return "";
 
   if (block.type === "boa_text") {
@@ -272,61 +305,83 @@ function evaluateExpression(block, variables) {
   }
 
   if (block.type === "boa_input") {
-    const promptText = evaluateExpression(getValueBlock(block, "PROMPT"), variables) || "Type an answer:";
-    return window.prompt(promptText, "") || "";
+    const promptText = (await evaluateExpression(getValueBlock(block, "PROMPT"), variables)) || "Type an answer:";
+    return showInputPrompt(promptText);
   }
 
   if (block.type === "boa_lower") {
-    return evaluateExpression(getValueBlock(block, "VALUE"), variables).toLowerCase();
+    return (await evaluateExpression(getValueBlock(block, "VALUE"), variables)).toLowerCase();
   }
 
   if (block.type === "boa_or") {
-    const firstValue = evaluateExpression(getValueBlock(block, "A"), variables);
+    const firstValue = await evaluateExpression(getValueBlock(block, "A"), variables);
     return firstValue || evaluateExpression(getValueBlock(block, "B"), variables);
   }
 
   return "";
 }
 
-function runStatements(block, variables, messages) {
+async function runStatements(block, variables, messages) {
   let current = block;
 
   while (current) {
     if (current.type === "boa_set") {
-      variables[current.getFieldValue("VAR")] = evaluateExpression(getValueBlock(current, "VALUE"), variables);
+      variables[current.getFieldValue("VAR")] = await evaluateExpression(getValueBlock(current, "VALUE"), variables);
     }
 
     if (current.type === "boa_print") {
-      messages.push(evaluateExpression(getValueBlock(current, "VALUE"), variables));
+      const message = await evaluateExpression(getValueBlock(current, "VALUE"), variables);
+      messages.push(message);
+      appendDialogue(message || "…", "speech-bubble");
     }
 
     if (current.type === "boa_if_else") {
-      const testValue = evaluateExpression(getValueBlock(current, "TEST"), variables);
+      const testValue = await evaluateExpression(getValueBlock(current, "TEST"), variables);
       const branchName = testValue ? "DO" : "ELSE";
-      runStatements(current.getInputTargetBlock(branchName), variables, messages);
+      await runStatements(current.getInputTargetBlock(branchName), variables, messages);
     }
 
     current = current.getNextBlock();
   }
 }
 
-function runProgram() {
+async function runProgram() {
   updateCodePreview();
+  hideInputPrompt();
+  runButton.disabled = true;
+  dialogueOutput.innerHTML = "";
+
   const variables = {};
   const messages = [];
   const topBlocks = workspace.getTopBlocks(true).filter((block) => !block.outputConnection);
 
-  topBlocks.forEach((block) => runStatements(block, variables, messages));
+  for (const block of topBlocks) {
+    await runStatements(block, variables, messages);
+  }
 
-  dialogueOutput.textContent = messages.length
-    ? messages.join("\n")
-    : "No print blocks ran. Add print() to make the character speak.";
+  if (!messages.length) {
+    appendDialogue("No print blocks ran. Add print() to make the character speak.", "speech-bubble narrator-bubble");
+  }
+
+  runButton.disabled = false;
 }
 
 document.querySelectorAll(".character-card").forEach((card) => {
   card.addEventListener("click", () => chooseCharacter(card.dataset.character));
 });
 
-document.getElementById("runButton").addEventListener("click", runProgram);
+dialogueInputForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  if (!activeInputResolver) return;
+
+  const reply = dialogueInput.value;
+  const resolveInput = activeInputResolver;
+  appendDialogue(reply || "(no reply)", "reply-bubble");
+  hideInputPrompt();
+  resolveInput(reply);
+});
+
+runButton.addEventListener("click", runProgram);
 workspace.addChangeListener(updateCodePreview);
 updateCodePreview();

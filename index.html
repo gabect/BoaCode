@@ -21,62 +21,79 @@
     </header>
 
     <main class="app-shell">
-      <section class="panel character-panel" aria-labelledby="character-title">
-        <div class="section-heading">
-          <h2 id="character-title">1. Pick a character</h2>
-          <p>The selected character will say the program output.</p>
-        </div>
-
-        <div class="character-grid" role="radiogroup" aria-label="Character choices">
-          <button class="character-card selected" type="button" data-character="Robot" aria-pressed="true">
-            <span class="character-face" aria-hidden="true">🤖</span>
-            <span>Robot</span>
-          </button>
-          <button class="character-card" type="button" data-character="Detective" aria-pressed="false">
-            <span class="character-face" aria-hidden="true">🕵️</span>
-            <span>Detective</span>
-          </button>
-          <button class="character-card" type="button" data-character="Wizard" aria-pressed="false">
-            <span class="character-face" aria-hidden="true">🧙</span>
-            <span>Wizard</span>
-          </button>
-          <button class="character-card" type="button" data-character="Astronaut" aria-pressed="false">
-            <span class="character-face" aria-hidden="true">👩‍🚀</span>
-            <span>Astronaut</span>
-          </button>
-        </div>
-      </section>
-
-      <section class="panel workspace-panel" aria-labelledby="workspace-title">
-        <div class="section-heading workspace-heading">
-          <div>
-            <h2 id="workspace-title">2. Arrange the blocks</h2>
-            <p>Only simple starter blocks are included.</p>
+      <div class="activity-column">
+        <section class="panel character-panel" aria-labelledby="character-title">
+          <div class="section-heading">
+            <h2 id="character-title">1. Pick a character</h2>
+            <p>The selected character will say the program output.</p>
           </div>
-          <button id="runButton" class="run-button" type="button">Run blocks</button>
-        </div>
-        <div id="blocklyDiv" aria-label="Blockly coding workspace"></div>
-      </section>
+
+          <div class="character-grid" role="radiogroup" aria-label="Character choices">
+            <button class="character-card selected" type="button" data-character="Robot" aria-pressed="true">
+              <span class="character-face" aria-hidden="true">🤖</span>
+              <span>Robot</span>
+            </button>
+            <button class="character-card" type="button" data-character="Detective" aria-pressed="false">
+              <span class="character-face" aria-hidden="true">🕵️</span>
+              <span>Detective</span>
+            </button>
+            <button class="character-card" type="button" data-character="Wizard" aria-pressed="false">
+              <span class="character-face" aria-hidden="true">🧙</span>
+              <span>Wizard</span>
+            </button>
+            <button class="character-card" type="button" data-character="Astronaut" aria-pressed="false">
+              <span class="character-face" aria-hidden="true">👩‍🚀</span>
+              <span>Astronaut</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="panel workspace-panel" aria-labelledby="workspace-title">
+          <div class="section-heading workspace-heading">
+            <div>
+              <h2 id="workspace-title">2. Arrange the blocks</h2>
+              <p>Only simple starter blocks are included.</p>
+            </div>
+            <button id="runButton" class="run-button" type="button">Run blocks</button>
+          </div>
+          <div id="blocklyDiv" aria-label="Blockly coding workspace"></div>
+        </section>
+      </div>
 
       <section class="panel output-panel" aria-labelledby="output-title">
         <div class="section-heading">
           <h2 id="output-title">3. Read the result</h2>
-          <p>Python-style code appears beside the character dialogue.</p>
+          <p>The selected character asks and answers inside the story scene.</p>
         </div>
 
-        <div class="result-grid">
-          <article class="dialogue-card" aria-live="polite">
-            <div class="speaker-badge" id="speakerBadge">🤖 Robot</div>
-            <div id="dialogueOutput" class="speech-bubble">
-              Run the blocks to start the conversation.
+        <article class="dialogue-card" aria-live="polite">
+          <div class="character-stage">
+            <div class="avatar-frame" id="speakerAvatar" aria-hidden="true">🤖</div>
+            <div>
+              <p class="stage-label">Now speaking</p>
+              <h3 id="speakerName">Robot</h3>
             </div>
-          </article>
+          </div>
 
-          <article class="code-card">
-            <h3>Python-style code</h3>
-            <pre id="codeOutput"><code># Run your blocks to see code here.</code></pre>
-          </article>
-        </div>
+          <div id="dialogueOutput" class="dialogue-stream">
+            <div class="speech-bubble narrator-bubble">
+              Run the blocks to start the classroom conversation.
+            </div>
+          </div>
+
+          <form id="dialogueInputForm" class="dialogue-input hidden">
+            <label id="dialogueInputLabel" for="dialogueInput">Type your answer</label>
+            <div class="dialogue-input-row">
+              <input id="dialogueInput" type="text" autocomplete="off" />
+              <button class="send-button" type="submit">Reply</button>
+            </div>
+          </form>
+        </article>
+
+        <details class="code-disclosure">
+          <summary>Peek at Python-style code</summary>
+          <pre id="codeOutput"><code># Run your blocks to see code here.</code></pre>
+        </details>
       </section>
     </main>
 
