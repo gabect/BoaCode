@@ -27,13 +27,12 @@ body {
 
 .page-header,
 .app-shell {
-  width: min(1180px, calc(100% - 24px));
-  margin: 0 auto;
+  margin: 0;
+  max-width: none;
+  padding: 1rem 2rem;
+  width: 100%;
 }
 
-.page-header {
-  padding: 28px 0 16px;
-}
 
 .eyebrow {
   color: var(--red);
@@ -82,7 +81,12 @@ h3 {
   display: grid;
   gap: 16px;
   grid-template-columns: minmax(0, 3fr) minmax(270px, 1fr);
-  padding-bottom: 28px;
+  padding: 1rem 2rem;
+}
+
+.activity-column {
+  display: grid;
+  gap: 16px;
 }
 
 .activity-column {
