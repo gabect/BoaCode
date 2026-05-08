@@ -18,8 +18,7 @@ Students choose one of four characters:
 - Astronaut
 
 When the blocks run, the output from `print()` appears as dialogue from the
-selected character. If a program reaches `input()`, the character asks the
-question inside the result panel and waits for the student to submit an answer.
+selected character.
 
 ## Included coding ideas
 
@@ -34,8 +33,7 @@ The Blockly workspace is limited to simple starter concepts:
 
 The browser simulates the behavior with JavaScript. It also generates
 Python-style code so students can read the program they built, but it does not
-execute real Python. The app does not use browser prompt or alert boxes; all
-interaction stays in the BoaCode result panel.
+execute real Python.
 
 ## File structure
 

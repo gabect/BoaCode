@@ -178,12 +178,6 @@ Blockly.Xml.domToWorkspace(
 const codeOutput = document.getElementById("codeOutput");
 const dialogueOutput = document.getElementById("dialogueOutput");
 const speakerBadge = document.getElementById("speakerBadge");
-const inputForm = document.getElementById("inputForm");
-const inputLabel = document.getElementById("inputLabel");
-const studentInput = document.getElementById("studentInput");
-const runButton = document.getElementById("runButton");
-
-let isRunning = false;
 
 function chooseCharacter(character) {
   selectedCharacter = character;
@@ -266,42 +260,7 @@ function updateCodePreview() {
   codeOutput.textContent = lines.length ? lines.join("\n") : "# Add blocks to see code here.";
 }
 
-function showDialogue(messages, waitingQuestion = "") {
-  const lines = [...messages];
-
-  if (waitingQuestion) {
-    lines.push(waitingQuestion);
-  }
-
-  dialogueOutput.textContent = lines.length
-    ? lines.join("\n")
-    : "No print blocks ran yet. Add print() to make the character speak.";
-}
-
-// input() pauses the simulator and asks inside the BoaCode result panel. This
-// keeps all student interaction in the character panel instead of using the
-// browser's default prompt() or alert() boxes.
-function askForInput(question, messages) {
-  return new Promise((resolve) => {
-    const cleanQuestion = question || "Type an answer:";
-
-    showDialogue(messages, cleanQuestion);
-    inputLabel.textContent = cleanQuestion;
-    studentInput.value = "";
-    inputForm.hidden = false;
-    studentInput.focus();
-
-    inputForm.onsubmit = (event) => {
-      event.preventDefault();
-      const answer = studentInput.value;
-      inputForm.hidden = true;
-      inputForm.onsubmit = null;
-      resolve(answer);
-    };
-  });
-}
-
-async function evaluateExpression(block, state) {
+function evaluateExpression(block, variables) {
   if (!block) return "";
 
   if (block.type === "boa_text") {
@@ -309,79 +268,65 @@ async function evaluateExpression(block, state) {
   }
 
   if (block.type === "boa_get") {
-    return state.variables[block.getFieldValue("VAR")] || "";
+    return variables[block.getFieldValue("VAR")] || "";
   }
 
   if (block.type === "boa_input") {
-    const question = await evaluateExpression(getValueBlock(block, "PROMPT"), state);
-    return askForInput(question, state.messages);
+    const promptText = evaluateExpression(getValueBlock(block, "PROMPT"), variables) || "Type an answer:";
+    return window.prompt(promptText, "") || "";
   }
 
   if (block.type === "boa_lower") {
-    const value = await evaluateExpression(getValueBlock(block, "VALUE"), state);
-    return value.toLowerCase();
+    return evaluateExpression(getValueBlock(block, "VALUE"), variables).toLowerCase();
   }
 
   if (block.type === "boa_or") {
-    const firstValue = await evaluateExpression(getValueBlock(block, "A"), state);
-    return firstValue || evaluateExpression(getValueBlock(block, "B"), state);
+    const firstValue = evaluateExpression(getValueBlock(block, "A"), variables);
+    return firstValue || evaluateExpression(getValueBlock(block, "B"), variables);
   }
 
   return "";
 }
 
-async function runStatements(block, state) {
+function runStatements(block, variables, messages) {
   let current = block;
 
   while (current) {
     if (current.type === "boa_set") {
-      state.variables[current.getFieldValue("VAR")] = await evaluateExpression(getValueBlock(current, "VALUE"), state);
+      variables[current.getFieldValue("VAR")] = evaluateExpression(getValueBlock(current, "VALUE"), variables);
     }
 
     if (current.type === "boa_print") {
-      state.messages.push(await evaluateExpression(getValueBlock(current, "VALUE"), state));
-      showDialogue(state.messages);
+      messages.push(evaluateExpression(getValueBlock(current, "VALUE"), variables));
     }
 
     if (current.type === "boa_if_else") {
-      const testValue = await evaluateExpression(getValueBlock(current, "TEST"), state);
+      const testValue = evaluateExpression(getValueBlock(current, "TEST"), variables);
       const branchName = testValue ? "DO" : "ELSE";
-      await runStatements(current.getInputTargetBlock(branchName), state);
+      runStatements(current.getInputTargetBlock(branchName), variables, messages);
     }
 
     current = current.getNextBlock();
   }
 }
 
-async function runProgram() {
-  if (isRunning) return;
-
-  isRunning = true;
-  runButton.disabled = true;
-  inputForm.hidden = true;
+function runProgram() {
   updateCodePreview();
-
-  const state = {
-    variables: {},
-    messages: [],
-  };
+  const variables = {};
+  const messages = [];
   const topBlocks = workspace.getTopBlocks(true).filter((block) => !block.outputConnection);
 
-  showDialogue(state.messages);
+  topBlocks.forEach((block) => runStatements(block, variables, messages));
 
-  for (const block of topBlocks) {
-    await runStatements(block, state);
-  }
-
-  showDialogue(state.messages);
-  runButton.disabled = false;
-  isRunning = false;
+  dialogueOutput.textContent = messages.length
+    ? messages.join("\n")
+    : "No print blocks ran. Add print() to make the character speak.";
 }
 
 document.querySelectorAll(".character-card").forEach((card) => {
   card.addEventListener("click", () => chooseCharacter(card.dataset.character));
 });
 
-runButton.addEventListener("click", runProgram);
+document.getElementById("runButton").addEventListener("click", runProgram);
 workspace.addChangeListener(updateCodePreview);
 updateCodePreview();
