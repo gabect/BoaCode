@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BoaCode Blocks</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Google Blockly powers the simple block workspace. -->
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+  </head>
+  <body>
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">BoaCode Classroom Activity</p>
+        <h1>Build a Tiny Dialogue Program</h1>
+        <p class="intro">
+          Choose a character, snap together a few Python-style blocks, and run
+          the activity to see your output as dialogue.
+        </p>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="panel character-panel" aria-labelledby="character-title">
+        <div class="section-heading">
+          <h2 id="character-title">1. Pick a character</h2>
+          <p>The selected character will say the program output.</p>
+        </div>
+
+        <div class="character-grid" role="radiogroup" aria-label="Character choices">
+          <button class="character-card selected" type="button" data-character="Robot" aria-pressed="true">
+            <span class="character-face" aria-hidden="true">🤖</span>
+            <span>Robot</span>
+          </button>
+          <button class="character-card" type="button" data-character="Detective" aria-pressed="false">
+            <span class="character-face" aria-hidden="true">🕵️</span>
+            <span>Detective</span>
+          </button>
+          <button class="character-card" type="button" data-character="Wizard" aria-pressed="false">
+            <span class="character-face" aria-hidden="true">🧙</span>
+            <span>Wizard</span>
+          </button>
+          <button class="character-card" type="button" data-character="Astronaut" aria-pressed="false">
+            <span class="character-face" aria-hidden="true">👩‍🚀</span>
+            <span>Astronaut</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="panel workspace-panel" aria-labelledby="workspace-title">
+        <div class="section-heading workspace-heading">
+          <div>
+            <h2 id="workspace-title">2. Arrange the blocks</h2>
+            <p>Only simple starter blocks are included.</p>
+          </div>
+          <button id="runButton" class="run-button" type="button">Run blocks</button>
+        </div>
+        <div id="blocklyDiv" aria-label="Blockly coding workspace"></div>
+      </section>
+
+      <section class="panel output-panel" aria-labelledby="output-title">
+        <div class="section-heading">
+          <h2 id="output-title">3. Read the result</h2>
+          <p>Python-style code appears beside the character dialogue.</p>
+        </div>
+
+        <div class="result-grid">
+          <article class="dialogue-card" aria-live="polite">
+            <div class="speaker-badge" id="speakerBadge">🤖 Robot</div>
+            <div id="dialogueOutput" class="speech-bubble">
+              Run the blocks to start the conversation.
+            </div>
+          </article>
+
+          <article class="code-card">
+            <h3>Python-style code</h3>
+            <pre id="codeOutput"><code># Run your blocks to see code here.</code></pre>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <xml id="toolbox" style="display: none">
+      <category name="Starter Blocks" colour="#d85f33">
+        <block type="boa_print"></block>
+        <block type="boa_input"></block>
+        <block type="boa_set"></block>
+        <block type="boa_get"></block>
+        <block type="boa_text"></block>
+        <block type="boa_lower"></block>
+        <block type="boa_or"></block>
+        <block type="boa_if_else"></block>
+      </category>
+    </xml>
+
+    <script src="script.js"></script>
+  </body>
+</html>
