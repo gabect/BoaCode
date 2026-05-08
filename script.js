@@ -16,6 +16,7 @@ let selectedCharacter = "Robot";
 const variableOptions = [
   ["answer", "answer"],
   ["name", "name"],
+  ["grade", "grade"],
   ["mood", "mood"],
 ];
 
@@ -82,6 +83,26 @@ Blockly.Blocks.boa_lower = {
     this.setOutput(true);
     this.setColour(120);
     this.setTooltip("Make text lowercase.");
+  },
+};
+
+Blockly.Blocks.boa_equals = {
+  init() {
+    this.appendValueInput("A");
+    this.appendValueInput("B").appendField("equals");
+    this.setOutput(true, "Boolean");
+    this.setColour(120);
+    this.setTooltip("Check whether two values are equal.");
+  },
+};
+
+Blockly.Blocks.boa_and = {
+  init() {
+    this.appendValueInput("A").setCheck("Boolean");
+    this.appendValueInput("B").setCheck("Boolean").appendField("and");
+    this.setOutput(true, "Boolean");
+    this.setColour(120);
+    this.setTooltip("Both conditions must be true. Nest this block to check more conditions.");
   },
 };
 
@@ -226,6 +247,14 @@ function generateExpression(block) {
     return `${generateExpression(getValueBlock(block, "VALUE"))}.lower()`;
   }
 
+  if (block.type === "boa_equals") {
+    return `(${generateExpression(getValueBlock(block, "A"))} == ${generateExpression(getValueBlock(block, "B"))})`;
+  }
+
+  if (block.type === "boa_and") {
+    return `(${generateExpression(getValueBlock(block, "A"))} and ${generateExpression(getValueBlock(block, "B"))})`;
+  }
+
   if (block.type === "boa_or") {
     return `(${generateExpression(getValueBlock(block, "A"))} or ${generateExpression(getValueBlock(block, "B"))})`;
   }
@@ -311,6 +340,20 @@ async function evaluateExpression(block, variables) {
 
   if (block.type === "boa_lower") {
     return (await evaluateExpression(getValueBlock(block, "VALUE"), variables)).toLowerCase();
+  }
+
+  if (block.type === "boa_equals") {
+    const firstValue = await evaluateExpression(getValueBlock(block, "A"), variables);
+    const secondValue = await evaluateExpression(getValueBlock(block, "B"), variables);
+    return firstValue === secondValue;
+  }
+
+  if (block.type === "boa_and") {
+    const firstValue = await evaluateExpression(getValueBlock(block, "A"), variables);
+
+    if (!firstValue) return false;
+
+    return Boolean(await evaluateExpression(getValueBlock(block, "B"), variables));
   }
 
   if (block.type === "boa_or") {
