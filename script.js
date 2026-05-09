@@ -58,7 +58,7 @@ Blockly.Blocks.boa_set = {
 
 Blockly.Blocks.boa_print = {
   init() {
-    this.appendValueInput("VALUE").appendField("print");
+    this.appendValueInput("VALUE").setCheck("String").appendField("print");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour(16);
@@ -68,7 +68,7 @@ Blockly.Blocks.boa_print = {
 
 Blockly.Blocks.boa_input = {
   init() {
-    this.appendValueInput("PROMPT").appendField("input");
+    this.appendValueInput("PROMPT").setCheck("String").appendField("input");
     this.setOutput(true, "String");
     this.setColour(16);
     this.setTooltip("Ask the student a question while the blocks run.");
@@ -77,7 +77,7 @@ Blockly.Blocks.boa_input = {
 
 Blockly.Blocks.boa_lower = {
   init() {
-    this.appendValueInput("VALUE").appendField("lower");
+    this.appendValueInput("VALUE").setCheck("String").appendField("lower");
     this.setOutput(true, "String");
     this.setColour(120);
     this.setTooltip("Make text lowercase.");
@@ -97,8 +97,8 @@ Blockly.Blocks.boa_join_text = {
 
 Blockly.Blocks.boa_equals = {
   init() {
-    this.appendValueInput("A");
-    this.appendValueInput("B").appendField("equals");
+    this.appendValueInput("A").setCheck("String");
+    this.appendValueInput("B").setCheck("String").appendField("equals");
     this.setOutput(true, "Boolean");
     this.setColour(120);
     this.setTooltip("Check whether two values are equal.");
