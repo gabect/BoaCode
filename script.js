@@ -74,7 +74,7 @@ Blockly.Blocks.boa_print = {
 Blockly.Blocks.boa_input = {
   init() {
     this.appendValueInput("PROMPT").appendField("input");
-    this.setOutput(true);
+    this.setOutput(true, "String");
     this.setColour(16);
     this.setTooltip("Ask the student a question while the blocks run.");
   },
@@ -83,9 +83,20 @@ Blockly.Blocks.boa_input = {
 Blockly.Blocks.boa_lower = {
   init() {
     this.appendValueInput("VALUE").appendField("lower");
-    this.setOutput(true);
+    this.setOutput(true, "String");
     this.setColour(120);
     this.setTooltip("Make text lowercase.");
+  },
+};
+
+Blockly.Blocks.boa_join_text = {
+  init() {
+    this.appendValueInput("A").setCheck("String").appendField("join text");
+    this.appendValueInput("B").setCheck("String").appendField("+");
+    this.setInputsInline(true);
+    this.setOutput(true, "String");
+    this.setColour(46);
+    this.setTooltip("Join two pieces of text into one longer text value. Nest this block to build sentences.");
   },
 };
 
@@ -271,6 +282,10 @@ function generateExpression(block) {
     return `${generateExpression(getValueBlock(block, "VALUE"))}.lower()`;
   }
 
+  if (block.type === "boa_join_text") {
+    return `(${generateExpression(getValueBlock(block, "A"))} + ${generateExpression(getValueBlock(block, "B"))})`;
+  }
+
   if (block.type === "boa_equals") {
     return `(${generateExpression(getValueBlock(block, "A"))} == ${generateExpression(getValueBlock(block, "B"))})`;
   }
@@ -364,6 +379,12 @@ async function evaluateExpression(block, variables) {
 
   if (block.type === "boa_lower") {
     return (await evaluateExpression(getValueBlock(block, "VALUE"), variables)).toLowerCase();
+  }
+
+  if (block.type === "boa_join_text") {
+    const firstValue = await evaluateExpression(getValueBlock(block, "A"), variables);
+    const secondValue = await evaluateExpression(getValueBlock(block, "B"), variables);
+    return `${firstValue}${secondValue}`;
   }
 
   if (block.type === "boa_equals") {
