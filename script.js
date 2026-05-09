@@ -14,14 +14,9 @@ let selectedCharacter = "Robot";
 const themeStorageKey = "boacode-theme";
 const themeNames = ["cartoon", "modern", "matrix"];
 
-// These friendly variable names avoid a full variable manager while still
-// letting students practice assignment and reuse values.
-const variableOptions = [
-  ["answer", "answer"],
-  ["name", "name"],
-  ["grade", "grade"],
-  ["mood", "mood"],
-];
+// Blockly's variable field gives students one simple variable menu, plus the
+// toolbox button below lets them create their own beginner-friendly names.
+const defaultVariableName = "answer";
 
 // A tiny expression block for words. It supports print("Hello!") and
 // input("What is your name?") without adding a large text toolbox.
@@ -40,8 +35,8 @@ Blockly.Blocks.boa_text = {
 Blockly.Blocks.boa_get = {
   init() {
     this.appendDummyInput()
-      .appendField("variable")
-      .appendField(new Blockly.FieldDropdown(variableOptions), "VAR");
+      .appendField("get variable")
+      .appendField(new Blockly.FieldVariable(defaultVariableName), "VAR");
     this.setOutput(true);
     this.setColour(210);
     this.setTooltip("Use a saved variable.");
@@ -51,8 +46,8 @@ Blockly.Blocks.boa_get = {
 Blockly.Blocks.boa_set = {
   init() {
     this.appendValueInput("VALUE")
-      .appendField("set")
-      .appendField(new Blockly.FieldDropdown(variableOptions), "VAR")
+      .appendField("set variable")
+      .appendField(new Blockly.FieldVariable(defaultVariableName), "VAR")
       .appendField("=");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
@@ -147,6 +142,12 @@ const workspace = Blockly.inject("blocklyDiv", {
   trashcan: true,
   scrollbars: true,
   renderer: "zelos",
+});
+
+workspace.createVariable(defaultVariableName);
+
+workspace.registerButtonCallback("CREATE_VARIABLE", () => {
+  Blockly.Variables.createVariableButtonHandler(workspace, undefined, undefined);
 });
 
 // Give students a short starter program so the page is useful immediately.
@@ -257,6 +258,21 @@ function escapePythonString(text) {
   return String(text).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 }
 
+function getVariableName(block) {
+  const variableId = block.getFieldValue("VAR");
+  return workspace.getVariableById(variableId)?.name || variableId || defaultVariableName;
+}
+
+function toPythonVariableName(name) {
+  const safeName = String(name)
+    .trim()
+    .replace(/[^A-Za-z0-9_]/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^([0-9])/, "_$1");
+
+  return safeName || defaultVariableName;
+}
+
 function getValueBlock(block, inputName) {
   return block.getInputTargetBlock(inputName);
 }
@@ -271,7 +287,7 @@ function generateExpression(block) {
   }
 
   if (block.type === "boa_get") {
-    return block.getFieldValue("VAR");
+    return toPythonVariableName(getVariableName(block));
   }
 
   if (block.type === "boa_input") {
@@ -307,7 +323,7 @@ function generateStatements(block, indent = "") {
 
   while (current) {
     if (current.type === "boa_set") {
-      lines.push(`${indent}${current.getFieldValue("VAR")} = ${generateExpression(getValueBlock(current, "VALUE"))}`);
+      lines.push(`${indent}${toPythonVariableName(getVariableName(current))} = ${generateExpression(getValueBlock(current, "VALUE"))}`);
     }
 
     if (current.type === "boa_print") {
