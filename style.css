@@ -1,5 +1,5 @@
 :root {
-  --topbar-height: 66px;
+  --topbar-height: 76px;
   --workspace-width: 75%;
   --cream: #fff3d6;
   --paper: #fffaf0;
@@ -201,9 +201,13 @@ input {
   box-shadow: 0 4px 18px rgba(36, 52, 71, 0.055);
   display: flex;
   flex: 0 0 var(--topbar-height);
+  flex-wrap: nowrap;
   gap: 0.8rem;
+  height: var(--topbar-height);
   justify-content: space-between;
+  max-height: var(--topbar-height);
   min-height: var(--topbar-height);
+  overflow: hidden;
   padding: 0.5rem 1rem;
   position: relative;
   z-index: 2;
@@ -222,21 +226,26 @@ input {
 }
 
 .brand-cluster {
+  flex: 0 1 auto;
   gap: 0.7rem;
-  min-width: 310px;
+  max-height: 56px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .brand-logo {
   display: block;
-  flex: 0 0 auto;
-  height: 38px;
-  max-width: 122px;
+  flex: 0 1 auto;
+  height: auto;
+  max-height: 56px;
+  max-width: 260px;
   object-fit: contain;
   width: auto;
 }
 
 .brand-copy {
   min-width: 0;
+  overflow: hidden;
 }
 
 h1,
@@ -283,10 +292,12 @@ h3 {
 }
 
 .topbar-actions {
-  flex: 1;
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
   gap: 0.55rem;
   justify-content: flex-end;
   min-width: 0;
+  overflow: hidden;
 }
 
 .character-button,
@@ -413,7 +424,7 @@ h3 {
   display: grid;
   flex: 1 1 auto;
   gap: 0;
-  grid-template-columns: minmax(0, var(--workspace-width)) var(--divider-width) minmax(320px, 1fr);
+  grid-template-columns: minmax(0, var(--workspace-width)) var(--divider-width) minmax(0, 1fr);
   min-height: 0;
   overflow: hidden;
   padding: 0.9rem 1rem 1rem;
@@ -974,7 +985,11 @@ code {
     align-items: stretch;
     flex: 0 0 auto;
     flex-direction: column;
+    flex-wrap: wrap;
+    height: auto;
+    max-height: none;
     min-height: auto;
+    overflow: visible;
   }
 
   .brand-cluster {

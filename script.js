@@ -10,14 +10,26 @@ const characterFaces = {
 };
 
 const characterNames = Object.keys(characterFaces);
+const UI_VERSION = "boacode-ui-v2";
+const uiVersionStorageKey = "boacode-ui-version";
 const characterStorageKey = "boacode-character";
 const themeStorageKey = "boacode-theme";
 const splitStorageKey = "boacode-workspace-width";
+const defaultTheme = "cartoon";
+const defaultCharacter = "Robot";
 const defaultWorkspaceSplit = 75;
 const minWorkspaceSplit = 58;
 const maxWorkspaceSplit = 82;
-const minResultPanelWidth = 320;
-const dividerWidth = 18;
+const boaCodeLayoutStorageKeys = [
+  splitStorageKey,
+  "boacode-layout",
+  "boacode-layout-width",
+  "boacode-header",
+  "boacode-header-height",
+  "boacode-topbar-height",
+  "boacode-panel-layout",
+  "boacode-panels",
+];
 const desktopSplitQuery = "(min-width: 901px)";
 const themeNames = ["cartoon", "modern", "matrix"];
 let selectedCharacter = "Robot";
@@ -235,6 +247,7 @@ const characterButtonAvatar = document.querySelector(".character-button-avatar")
 const characterButtonName = document.getElementById("characterButtonName");
 const characterDialog = document.getElementById("characterDialog");
 const resetLayoutButton = document.getElementById("resetLayoutButton");
+const brandLogo = document.querySelector(".brand-logo");
 let activeInputResolver = null;
 let splitDragFrame = null;
 
@@ -254,6 +267,46 @@ function saveSetting(key, value) {
   }
 }
 
+function removeSavedSetting(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // Local storage can be unavailable in restricted contexts. Safe defaults still apply in memory.
+  }
+}
+
+function removeUnsafeBoaCodeLayoutSettings() {
+  boaCodeLayoutStorageKeys.forEach(removeSavedSetting);
+
+  try {
+    for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+      const key = localStorage.key(index);
+
+      if (/^boacode-(layout|header|topbar|panel)/.test(key)) {
+        localStorage.removeItem(key);
+      }
+    }
+  } catch {
+    // If iteration is blocked, the explicit key removals above have already handled the known layout keys.
+  }
+}
+
+function resetStoredUiDefaults() {
+  removeUnsafeBoaCodeLayoutSettings();
+  saveSetting(splitStorageKey, String(defaultWorkspaceSplit));
+  saveSetting(themeStorageKey, defaultTheme);
+  saveSetting(characterStorageKey, defaultCharacter);
+}
+
+function migrateUiStorageIfNeeded() {
+  if (readSavedSetting(uiVersionStorageKey) === UI_VERSION) return;
+
+  resetStoredUiDefaults();
+  saveSetting(uiVersionStorageKey, UI_VERSION);
+}
+
+migrateUiStorageIfNeeded();
+
 function getSavedTheme() {
   const savedTheme = readSavedSetting(themeStorageKey);
 
@@ -262,10 +315,10 @@ function getSavedTheme() {
   }
 
   if (savedTheme !== null) {
-    saveSetting(themeStorageKey, "cartoon");
+    saveSetting(themeStorageKey, defaultTheme);
   }
 
-  return "cartoon";
+  return defaultTheme;
 }
 
 function getSavedCharacter() {
@@ -276,15 +329,15 @@ function getSavedCharacter() {
   }
 
   if (savedCharacter !== null) {
-    saveSetting(characterStorageKey, "Robot");
+    saveSetting(characterStorageKey, defaultCharacter);
   }
 
-  return "Robot";
+  return defaultCharacter;
 }
 
 // Themes are cosmetic only: they swap body classes and leave Blockly/runtime logic unchanged.
 function applyTheme(theme) {
-  const selectedTheme = themeNames.includes(theme) ? theme : "cartoon";
+  const selectedTheme = themeNames.includes(theme) ? theme : defaultTheme;
 
   themeNames.forEach((themeName) => document.body.classList.remove(`theme-${themeName}`));
   document.body.classList.add(`theme-${selectedTheme}`);
@@ -300,7 +353,7 @@ function applyTheme(theme) {
 }
 
 function chooseCharacter(character, closeDialog = false) {
-  const safeCharacter = characterNames.includes(character) ? character : "Robot";
+  const safeCharacter = characterNames.includes(character) ? character : defaultCharacter;
   selectedCharacter = safeCharacter;
   saveSetting(characterStorageKey, safeCharacter);
   speakerAvatar.textContent = characterFaces[safeCharacter];
@@ -433,20 +486,10 @@ function isDesktopSplitLayout() {
   return window.matchMedia(desktopSplitQuery).matches;
 }
 
-function getMaxWorkspaceSplitForViewport() {
-  const shellWidth = appShell.getBoundingClientRect().width || window.innerWidth;
-
-  if (!Number.isFinite(shellWidth) || shellWidth <= minResultPanelWidth + dividerWidth) {
-    return maxWorkspaceSplit;
-  }
-
-  const maxPercentWithResultPanel = ((shellWidth - minResultPanelWidth - dividerWidth) / shellWidth) * 100;
-  return Math.max(minWorkspaceSplit, Math.min(maxWorkspaceSplit, maxPercentWithResultPanel));
-}
-
 function getClampedWorkspacePercent(percent) {
-  const dynamicMax = isDesktopSplitLayout() ? getMaxWorkspaceSplitForViewport() : maxWorkspaceSplit;
-  return Math.min(dynamicMax, Math.max(minWorkspaceSplit, percent));
+  if (!Number.isFinite(percent)) return defaultWorkspaceSplit;
+
+  return Math.min(maxWorkspaceSplit, Math.max(minWorkspaceSplit, percent));
 }
 
 function getSafeSavedWorkspacePercent() {
@@ -485,7 +528,9 @@ function setWorkspacePercent(percent, shouldSave = false) {
 }
 
 function resetWorkspaceSplit() {
+  removeUnsafeBoaCodeLayoutSettings();
   setWorkspacePercent(defaultWorkspaceSplit, true);
+  requestAnimationFrame(resizeBlocklyWorkspace);
 }
 
 function validateDesktopSplitPlacement() {
@@ -685,6 +730,13 @@ window.addEventListener("resize", () => {
   applySavedSplit();
   resizeBlocklyWorkspace();
 });
+
+window.addEventListener("load", () => {
+  applySavedSplit();
+  resizeBlocklyWorkspace();
+});
+
+brandLogo.addEventListener("load", resizeBlocklyWorkspace);
 
 themeButtons.forEach((button) => {
   button.addEventListener("click", () => applyTheme(button.dataset.theme));
