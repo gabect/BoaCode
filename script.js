@@ -31,7 +31,35 @@ const boaCodeLayoutStorageKeys = [
   "boacode-panels",
 ];
 const desktopSplitQuery = "(min-width: 901px)";
-const themeNames = ["cartoon", "modern", "matrix"];
+const themeNames = ["cartoon", "modern", "hacker"];
+let activeBlockPalette = "default";
+const blockPalettes = {
+  default: {
+    text: 46,
+    variables: 210,
+    io: 16,
+    operators: 120,
+    conditionals: 285,
+  },
+  hacker: {
+    variables: "#168a72",
+    io: "#2f8f46",
+    conditionals: "#23643a",
+    text: "#6d7f2a",
+    operators: "#5f9f34",
+  },
+};
+const blockTypesByPaletteKey = {
+  text: ["boa_text", "boa_join_text", "boa_lower"],
+  variables: ["boa_get", "boa_set"],
+  io: ["boa_print", "boa_input"],
+  operators: ["boa_equals", "boa_and", "boa_or"],
+  conditionals: ["boa_if_else"],
+};
+
+function blockColour(paletteKey) {
+  return blockPalettes[activeBlockPalette][paletteKey];
+}
 let selectedCharacter = "Robot";
 
 // Blockly's variable field gives students one simple variable menu, plus the
@@ -47,7 +75,7 @@ Blockly.Blocks.boa_text = {
       .appendField(new Blockly.FieldTextInput("Hello!"), "TEXT")
       .appendField('"');
     this.setOutput(true, "String");
-    this.setColour(46);
+    this.setColour(blockColour("text"));
     this.setTooltip("A short piece of text.");
   },
 };
@@ -58,7 +86,7 @@ Blockly.Blocks.boa_get = {
       .appendField("get variable")
       .appendField(new Blockly.FieldVariable(defaultVariableName), "VAR");
     this.setOutput(true);
-    this.setColour(210);
+    this.setColour(blockColour("variables"));
     this.setTooltip("Use a saved variable.");
   },
 };
@@ -71,7 +99,7 @@ Blockly.Blocks.boa_set = {
       .appendField("=");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setColour(210);
+    this.setColour(blockColour("variables"));
     this.setTooltip("Save a value in a variable.");
   },
 };
@@ -81,7 +109,7 @@ Blockly.Blocks.boa_print = {
     this.appendValueInput("VALUE").setCheck("String").appendField("print");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setColour(16);
+    this.setColour(blockColour("io"));
     this.setTooltip("Show dialogue from the selected character.");
   },
 };
@@ -90,7 +118,7 @@ Blockly.Blocks.boa_input = {
   init() {
     this.appendValueInput("PROMPT").setCheck("String").appendField("input");
     this.setOutput(true, "String");
-    this.setColour(16);
+    this.setColour(blockColour("io"));
     this.setTooltip("Ask the student a question while the blocks run.");
   },
 };
@@ -99,7 +127,7 @@ Blockly.Blocks.boa_lower = {
   init() {
     this.appendValueInput("VALUE").setCheck("String").appendField("lower");
     this.setOutput(true, "String");
-    this.setColour(120);
+    this.setColour(blockColour("text"));
     this.setTooltip("Make text lowercase.");
   },
 };
@@ -110,7 +138,7 @@ Blockly.Blocks.boa_join_text = {
     this.appendValueInput("B").setCheck("String").appendField("+");
     this.setInputsInline(true);
     this.setOutput(true, "String");
-    this.setColour(46);
+    this.setColour(blockColour("text"));
     this.setTooltip("Join two pieces of text into one longer text value. Nest this block to build sentences.");
   },
 };
@@ -120,7 +148,7 @@ Blockly.Blocks.boa_equals = {
     this.appendValueInput("A").setCheck("String");
     this.appendValueInput("B").setCheck("String").appendField("equals");
     this.setOutput(true, "Boolean");
-    this.setColour(120);
+    this.setColour(blockColour("operators"));
     this.setTooltip("Check whether two values are equal.");
   },
 };
@@ -130,7 +158,7 @@ Blockly.Blocks.boa_and = {
     this.appendValueInput("A").setCheck("Boolean");
     this.appendValueInput("B").setCheck("Boolean").appendField("and");
     this.setOutput(true, "Boolean");
-    this.setColour(120);
+    this.setColour(blockColour("operators"));
     this.setTooltip("Both conditions must be true. Nest this block to check more conditions.");
   },
 };
@@ -140,7 +168,7 @@ Blockly.Blocks.boa_or = {
     this.appendValueInput("A");
     this.appendValueInput("B").appendField("or");
     this.setOutput(true);
-    this.setColour(120);
+    this.setColour(blockColour("operators"));
     this.setTooltip("Use the first value if it is not empty; otherwise use the second value.");
   },
 };
@@ -152,7 +180,7 @@ Blockly.Blocks.boa_if_else = {
     this.appendStatementInput("ELSE").appendField("else");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setColour(285);
+    this.setColour(blockColour("conditionals"));
     this.setTooltip("Choose one path. Empty text counts as false; any other text counts as true.");
   },
 };
@@ -310,6 +338,11 @@ migrateUiStorageIfNeeded();
 function getSavedTheme() {
   const savedTheme = readSavedSetting(themeStorageKey);
 
+  if (savedTheme === "matrix") {
+    saveSetting(themeStorageKey, "hacker");
+    return "hacker";
+  }
+
   if (themeNames.includes(savedTheme)) {
     return savedTheme;
   }
@@ -335,13 +368,26 @@ function getSavedCharacter() {
   return defaultCharacter;
 }
 
-// Themes are cosmetic only: they swap body classes and leave Blockly/runtime logic unchanged.
+function applyBlocklyBlockPalette(theme) {
+  activeBlockPalette = theme === "hacker" ? "hacker" : "default";
+
+  Object.entries(blockTypesByPaletteKey).forEach(([paletteKey, blockTypes]) => {
+    workspace
+      .getAllBlocks(false)
+      .filter((block) => blockTypes.includes(block.type))
+      .forEach((block) => block.setColour(blockColour(paletteKey)));
+  });
+}
+
+// Themes are visual only: they swap body classes and block colours while leaving runtime logic unchanged.
 function applyTheme(theme) {
-  const selectedTheme = themeNames.includes(theme) ? theme : defaultTheme;
+  const normalizedTheme = theme === "matrix" ? "hacker" : theme;
+  const selectedTheme = themeNames.includes(normalizedTheme) ? normalizedTheme : defaultTheme;
 
   themeNames.forEach((themeName) => document.body.classList.remove(`theme-${themeName}`));
   document.body.classList.add(`theme-${selectedTheme}`);
   saveSetting(themeStorageKey, selectedTheme);
+  applyBlocklyBlockPalette(selectedTheme);
 
   themeButtons.forEach((button) => {
     const isSelected = button.dataset.theme === selectedTheme;
