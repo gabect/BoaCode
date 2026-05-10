@@ -204,6 +204,7 @@ body.theme-matrix {
 .character-card:focus-visible,
 .dialog-close-button:focus-visible,
 .cancel-button:focus-visible,
+.reset-layout-button:focus-visible,
 .split-divider:focus-visible {
   outline: 3px solid var(--orange);
   outline-offset: 2px;
@@ -260,6 +261,7 @@ body.theme-modern .dialogue-input,
 body.theme-modern .character-card,
 body.theme-modern .run-button,
 body.theme-modern .send-button,
+body.theme-modern .reset-layout-button,
 body.theme-modern .theme-options,
 body.theme-modern .character-button,
 body.theme-modern .character-dialog-card,
@@ -275,6 +277,7 @@ body.theme-matrix .character-stage,
 body.theme-matrix .dialogue-input,
 body.theme-matrix .code-disclosure,
 body.theme-matrix .theme-options,
+body.theme-matrix .reset-layout-button,
 body.theme-matrix .character-button,
 body.theme-matrix .character-dialog-card {
   box-shadow: var(--panel-shadow);
@@ -354,11 +357,20 @@ body.theme-cartoon .panel {
   margin-bottom: 10px;
 }
 
-.workspace-heading {
+.workspace-heading,
+.output-heading {
   align-items: center;
   display: flex;
   gap: 12px;
   justify-content: space-between;
+}
+
+.output-heading {
+  align-items: flex-start;
+}
+
+.output-heading > div {
+  min-width: 0;
 }
 
 .character-grid {
@@ -409,6 +421,19 @@ body.theme-cartoon .panel {
 .character-face {
   font-size: 1.75rem;
   line-height: 1;
+}
+
+.reset-layout-button {
+  background: var(--paper);
+  border: 2px solid var(--disclosure-border);
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 6px 10px;
 }
 
 .run-button {
@@ -763,12 +788,14 @@ code {
     grid-template-columns: 1fr 1fr;
   }
 
-  .workspace-heading {
+  .workspace-heading,
+  .output-heading {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .run-button {
+  .run-button,
+  .reset-layout-button {
     width: 100%;
   }
 }

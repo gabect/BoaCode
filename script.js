@@ -13,6 +13,10 @@ const characterNames = Object.keys(characterFaces);
 const characterStorageKey = "boacode-character";
 const themeStorageKey = "boacode-theme";
 const splitStorageKey = "boacode-workspace-width";
+const defaultWorkspaceSplit = 75;
+const minWorkspaceSplit = 60;
+const maxWorkspaceSplit = 80;
+const desktopSplitQuery = "(min-width: 1041px)";
 const themeNames = ["cartoon", "modern", "matrix"];
 let selectedCharacter = "Robot";
 
@@ -228,6 +232,7 @@ const characterButton = document.getElementById("characterButton");
 const characterButtonAvatar = document.querySelector(".character-button-avatar");
 const characterButtonName = document.getElementById("characterButtonName");
 const characterDialog = document.getElementById("characterDialog");
+const resetLayoutButton = document.getElementById("resetLayoutButton");
 let activeInputResolver = null;
 let splitDragFrame = null;
 
@@ -386,26 +391,37 @@ function resizeBlocklyWorkspace() {
   Blockly.svgResize(workspace);
 }
 
+function isDesktopSplitLayout() {
+  return window.matchMedia(desktopSplitQuery).matches;
+}
+
 function getClampedWorkspacePercent(percent) {
-  const shellWidth = appShell.getBoundingClientRect().width;
+  return Math.min(maxWorkspaceSplit, Math.max(minWorkspaceSplit, percent));
+}
 
-  if (!shellWidth) return 75;
+function getSafeSavedWorkspacePercent() {
+  const savedSplit = localStorage.getItem(splitStorageKey);
+  const savedPercent = Number(savedSplit);
 
-  const dividerWidth = splitDivider.getBoundingClientRect().width || 10;
-  const availableWidth = shellWidth - dividerWidth;
-  const minWorkspacePercent = Math.max(55, (650 / availableWidth) * 100, 100 - (640 / availableWidth) * 100);
-  const maxWorkspacePercent = Math.min(82, 100 - (280 / availableWidth) * 100);
+  if (savedSplit === null || !Number.isFinite(savedPercent)) {
+    return { percent: defaultWorkspaceSplit, wasReset: savedSplit !== null };
+  }
 
-  return Math.min(Math.max(percent, minWorkspacePercent), maxWorkspacePercent);
+  if (savedPercent < minWorkspaceSplit || savedPercent > maxWorkspaceSplit) {
+    return { percent: defaultWorkspaceSplit, wasReset: true };
+  }
+
+  return { percent: getClampedWorkspacePercent(savedPercent), wasReset: false };
 }
 
 function setWorkspacePercent(percent, shouldSave = false) {
-  const clampedPercent = getClampedWorkspacePercent(percent);
-  appShell.style.setProperty("--workspace-width", `${clampedPercent}%`);
-  splitDivider.setAttribute("aria-valuenow", String(Math.round(clampedPercent)));
+  const clampedPercent = getClampedWorkspacePercent(Number(percent));
+  const safePercent = Number.isFinite(clampedPercent) ? clampedPercent : defaultWorkspaceSplit;
+  appShell.style.setProperty("--workspace-width", `${safePercent}%`);
+  splitDivider.setAttribute("aria-valuenow", String(Math.round(safePercent)));
 
   if (shouldSave) {
-    localStorage.setItem(splitStorageKey, String(clampedPercent));
+    localStorage.setItem(splitStorageKey, String(safePercent));
   }
 
   if (splitDragFrame) {
@@ -418,10 +434,30 @@ function setWorkspacePercent(percent, shouldSave = false) {
   });
 }
 
+function resetWorkspaceSplit() {
+  setWorkspacePercent(defaultWorkspaceSplit, true);
+}
+
+function validateDesktopSplitPlacement() {
+  if (!isDesktopSplitLayout()) return;
+
+  const workspaceRect = document.querySelector(".workspace-panel").getBoundingClientRect();
+  const outputRect = document.querySelector(".output-panel").getBoundingClientRect();
+
+  if (outputRect.top > workspaceRect.top + 20 || outputRect.left <= workspaceRect.left) {
+    resetWorkspaceSplit();
+  }
+}
+
 function applySavedSplit() {
-  const savedSplit = localStorage.getItem(splitStorageKey);
-  const savedPercent = savedSplit === null ? 75 : Number(savedSplit);
-  setWorkspacePercent(Number.isFinite(savedPercent) ? savedPercent : 75);
+  if (!isDesktopSplitLayout()) {
+    setWorkspacePercent(defaultWorkspaceSplit);
+    return;
+  }
+
+  const { percent, wasReset } = getSafeSavedWorkspacePercent();
+  setWorkspacePercent(percent, wasReset);
+  requestAnimationFrame(validateDesktopSplitPlacement);
 }
 
 function updateSplitFromPointer(clientX, shouldSave = true) {
@@ -431,7 +467,7 @@ function updateSplitFromPointer(clientX, shouldSave = true) {
 }
 
 function beginSplitDrag(event) {
-  if (window.matchMedia("(max-width: 1040px)").matches) return;
+  if (!isDesktopSplitLayout()) return;
 
   splitDivider.classList.add("dragging");
   splitDivider.setPointerCapture(event.pointerId);
@@ -580,7 +616,7 @@ splitDivider.addEventListener("pointermove", dragSplit);
 splitDivider.addEventListener("pointerup", endSplitDrag);
 splitDivider.addEventListener("pointercancel", endSplitDrag);
 splitDivider.addEventListener("keydown", (event) => {
-  const currentPercent = Number(localStorage.getItem(splitStorageKey)) || 75;
+  const currentPercent = Number(splitDivider.getAttribute("aria-valuenow")) || defaultWorkspaceSplit;
 
   if (event.key === "ArrowLeft") {
     event.preventDefault();
@@ -592,6 +628,8 @@ splitDivider.addEventListener("keydown", (event) => {
     setWorkspacePercent(currentPercent + 2, true);
   }
 });
+
+resetLayoutButton.addEventListener("click", resetWorkspaceSplit);
 
 window.addEventListener("resize", () => {
   applySavedSplit();

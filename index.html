@@ -68,15 +68,18 @@
         role="separator"
         aria-label="Resize Blockly workspace and result panels"
         aria-orientation="vertical"
-        aria-valuemin="55"
-        aria-valuemax="82"
+        aria-valuemin="60"
+        aria-valuemax="80"
         tabindex="0"
       ></div>
 
       <section class="panel output-panel" aria-labelledby="output-title">
-        <div class="section-heading">
-          <h2 id="output-title">3. Read the result</h2>
-          <p>The selected character asks and answers inside the story scene.</p>
+        <div class="section-heading output-heading">
+          <div>
+            <h2 id="output-title">3. Read the result</h2>
+            <p>The selected character asks and answers inside the story scene.</p>
+          </div>
+          <button id="resetLayoutButton" class="reset-layout-button" type="button">Reset layout</button>
         </div>
 
         <article class="dialogue-card" aria-live="polite">
