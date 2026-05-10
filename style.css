@@ -222,26 +222,23 @@ input {
 }
 
 .brand-cluster {
-  gap: 0.65rem;
-  min-width: 210px;
+  gap: 0.7rem;
+  min-width: 310px;
 }
 
-.brand-mark {
-  align-items: center;
-  background: var(--orange);
-  border: var(--ui-border-width) solid color-mix(in srgb, var(--red) 45%, transparent);
-  border-radius: calc(var(--control-radius) - 6px);
-  color: var(--button-text);
-  display: inline-flex;
-  flex: 0 0 38px;
-  font-weight: 800;
+.brand-logo {
+  display: block;
+  flex: 0 0 auto;
   height: 38px;
-  justify-content: center;
-  letter-spacing: -0.04em;
-  box-shadow: 0 3px 10px rgba(36, 52, 71, 0.11);
+  max-width: 122px;
+  object-fit: contain;
+  width: auto;
 }
 
-.app-name,
+.brand-copy {
+  min-width: 0;
+}
+
 h1,
 h2,
 h3,
@@ -249,14 +246,22 @@ p {
   margin-top: 0;
 }
 
-.app-name {
-  color: var(--muted);
-  font-size: 0.83rem;
+.brand-tagline {
+  color: var(--ink);
+  font-size: clamp(0.92rem, 1.25vw, 1.06rem);
   font-weight: 800;
-  letter-spacing: 0.06em;
-  line-height: 1.1;
+  line-height: 1.08;
   margin-bottom: 2px;
-  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.brand-subtitle {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 0;
+  white-space: nowrap;
 }
 
 h1 {
