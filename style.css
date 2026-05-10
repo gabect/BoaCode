@@ -1,5 +1,5 @@
 :root {
-  --topbar-height: 72px;
+  --topbar-height: 66px;
   --workspace-width: 75%;
   --cream: #fff3d6;
   --paper: #fffaf0;
@@ -40,6 +40,11 @@
   --soft-shadow: 0 1px 0 rgba(255, 255, 255, 0.78) inset;
   --workspace-ring: rgba(239, 123, 69, 0.14);
   --workspace-inset: rgba(255, 244, 214, 0.58);
+  --panel-radius: 22px;
+  --control-radius: 999px;
+  --ui-border-width: 1px;
+  --bubble-radius: 17px;
+  --header-accent: var(--orange);
 }
 
 * {
@@ -66,10 +71,36 @@ body {
 }
 
 body.theme-cartoon {
+  --paper: #fff4dc;
+  --panel: #fff9ea;
+  --panel-strong: #fffefa;
+  --line: rgba(95, 65, 40, 0.22);
+  --line-strong: rgba(95, 65, 40, 0.42);
+  --theme-control-bg: rgba(255, 253, 246, 0.76);
+  --output-bg: #fff1d7;
+  --dialogue-bg: #fff9ec;
+  --dialogue-glow: rgba(255, 168, 103, 0.23);
+  --stage-bg: #ffe7b7;
+  --speech-bg: #fff1b8;
+  --question-bg: #dff4e6;
+  --reply-bg: #fffefa;
+  --narrator-bg: #fffdfa;
+  --code-bg: #fff8e8;
+  --panel-shadow: 0 5px 0 rgba(194, 90, 53, 0.16), 0 18px 34px rgba(116, 82, 32, 0.13);
+  --soft-shadow: 0 2px 0 rgba(255, 255, 255, 0.92) inset;
+  --workspace-ring: rgba(239, 123, 69, 0.2);
+  --workspace-inset: rgba(255, 218, 126, 0.34);
+  --panel-radius: 28px;
+  --control-radius: 20px;
+  --ui-border-width: 2px;
+  --bubble-radius: 22px;
+  --header-accent: #ef7b45;
   background:
+    radial-gradient(circle at 8% 14%, rgba(255, 209, 102, 0.3) 0 54px, transparent 55px),
+    radial-gradient(circle at 92% 78%, rgba(109, 184, 168, 0.2) 0 70px, transparent 71px),
     radial-gradient(circle at 18px 18px, rgba(36, 52, 71, 0.045) 1.4px, transparent 1.4px),
     linear-gradient(180deg, #fff6df 0%, #fff0cf 100%);
-  background-size: 34px 34px, auto;
+  background-size: auto, auto, 34px 34px, auto;
 }
 
 body.theme-modern {
@@ -106,6 +137,11 @@ body.theme-modern {
   --panel-shadow: 0 14px 32px rgba(31, 41, 55, 0.09);
   --workspace-ring: rgba(37, 99, 235, 0.1);
   --workspace-inset: rgba(219, 234, 254, 0.45);
+  --panel-radius: 18px;
+  --control-radius: 999px;
+  --ui-border-width: 1px;
+  --bubble-radius: 14px;
+  --header-accent: #2563eb;
 }
 
 body.theme-matrix {
@@ -146,6 +182,11 @@ body.theme-matrix {
   --panel-shadow: 0 0 0 1px rgba(51, 255, 136, 0.08), 0 14px 32px rgba(0, 0, 0, 0.34);
   --workspace-ring: rgba(51, 255, 136, 0.14);
   --workspace-inset: rgba(51, 255, 136, 0.04);
+  --panel-radius: 18px;
+  --control-radius: 8px;
+  --ui-border-width: 1px;
+  --bubble-radius: 10px;
+  --header-accent: #33ff88;
 }
 
 button,
@@ -155,15 +196,15 @@ input {
 
 .app-topbar {
   align-items: center;
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
-  border-bottom: 1px solid var(--line);
-  box-shadow: 0 6px 22px rgba(36, 52, 71, 0.06);
+  background: color-mix(in srgb, var(--paper) 84%, transparent);
+  border-bottom: var(--ui-border-width) solid var(--line);
+  box-shadow: 0 4px 18px rgba(36, 52, 71, 0.055);
   display: flex;
   flex: 0 0 var(--topbar-height);
-  gap: 1rem;
+  gap: 0.8rem;
   justify-content: space-between;
   min-height: var(--topbar-height);
-  padding: 0.65rem 1.25rem;
+  padding: 0.5rem 1rem;
   position: relative;
   z-index: 2;
 }
@@ -181,22 +222,23 @@ input {
 }
 
 .brand-cluster {
-  gap: 0.75rem;
-  min-width: 220px;
+  gap: 0.65rem;
+  min-width: 210px;
 }
 
 .brand-mark {
   align-items: center;
   background: var(--orange);
-  border-radius: 14px;
+  border: var(--ui-border-width) solid color-mix(in srgb, var(--red) 45%, transparent);
+  border-radius: calc(var(--control-radius) - 6px);
   color: var(--button-text);
   display: inline-flex;
-  flex: 0 0 42px;
+  flex: 0 0 38px;
   font-weight: 800;
-  height: 42px;
+  height: 38px;
   justify-content: center;
   letter-spacing: -0.04em;
-  box-shadow: 0 4px 12px rgba(36, 52, 71, 0.12);
+  box-shadow: 0 3px 10px rgba(36, 52, 71, 0.11);
 }
 
 .app-name,
@@ -237,7 +279,7 @@ h3 {
 
 .topbar-actions {
   flex: 1;
-  gap: 0.75rem;
+  gap: 0.55rem;
   justify-content: flex-end;
   min-width: 0;
 }
@@ -256,10 +298,11 @@ h3 {
 
 .character-button {
   background: var(--panel-strong);
-  border-radius: 999px;
-  gap: 0.45rem;
-  min-height: 44px;
-  padding: 0.35rem 0.75rem 0.35rem 0.4rem;
+  border-width: var(--ui-border-width);
+  border-radius: var(--control-radius);
+  gap: 0.38rem;
+  min-height: 40px;
+  padding: 0.3rem 0.65rem 0.3rem 0.34rem;
 }
 
 .character-button-avatar {
@@ -285,10 +328,10 @@ h3 {
 
 .theme-selector {
   background: var(--theme-control-bg);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  gap: 0.45rem;
-  padding: 0.25rem;
+  border: var(--ui-border-width) solid var(--line);
+  border-radius: var(--control-radius);
+  gap: 0.32rem;
+  padding: 0.18rem;
 }
 
 .theme-selector-label {
@@ -296,12 +339,12 @@ h3 {
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.05em;
-  padding-left: 0.55rem;
+  padding-left: 0.45rem;
   text-transform: uppercase;
 }
 
 .theme-options {
-  gap: 0.2rem;
+  gap: 0.14rem;
 }
 
 .theme-button {
@@ -313,14 +356,14 @@ h3 {
   font-size: 0.82rem;
   font-weight: 700;
   line-height: 1.15;
-  padding: 0.48rem 0.62rem;
+  padding: 0.36rem 0.5rem;
   white-space: nowrap;
 }
 
 .theme-button.active {
   background: var(--theme-active-bg);
   color: var(--theme-active-text);
-  box-shadow: 0 1px 6px rgba(36, 52, 71, 0.1);
+  box-shadow: 0 1px 5px rgba(36, 52, 71, 0.09);
 }
 
 .character-button:focus-visible,
@@ -339,13 +382,14 @@ h3 {
 .run-button {
   background: var(--orange);
   border-color: color-mix(in srgb, var(--red) 55%, var(--line-strong));
-  border-radius: 999px;
-  box-shadow: 0 4px 0 var(--red);
+  border-width: var(--ui-border-width);
+  border-radius: var(--control-radius);
+  box-shadow: 0 3px 0 var(--red);
   color: var(--button-text);
   flex: 0 0 auto;
   font-weight: 800;
-  min-height: 44px;
-  padding: 0.56rem 1.05rem;
+  min-height: 40px;
+  padding: 0.5rem 0.95rem;
 }
 
 .run-button:active {
@@ -359,7 +403,7 @@ h3 {
 }
 
 .app-shell {
-  --divider-width: 18px;
+  --divider-width: 20px;
   align-items: stretch;
   display: grid;
   flex: 1 1 auto;
@@ -367,18 +411,18 @@ h3 {
   grid-template-columns: minmax(0, var(--workspace-width)) var(--divider-width) minmax(320px, 1fr);
   min-height: 0;
   overflow: hidden;
-  padding: 1rem;
+  padding: 0.9rem 1rem 1rem;
   width: 100%;
 }
 
 .panel {
   background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 22px;
+  border: var(--ui-border-width) solid var(--line);
+  border-radius: var(--panel-radius);
   box-shadow: var(--panel-shadow), var(--soft-shadow);
   min-height: 0;
   min-width: 0;
-  padding: 0.9rem;
+  padding: 0.85rem;
 }
 
 .workspace-panel {
@@ -386,6 +430,25 @@ h3 {
   display: flex;
   flex-direction: column;
   margin-right: 0.55rem;
+}
+
+body.theme-cartoon .panel {
+  position: relative;
+}
+
+body.theme-cartoon .workspace-panel::before,
+body.theme-cartoon .output-panel::before {
+  background: var(--header-accent);
+  border: 2px solid rgba(95, 65, 40, 0.18);
+  border-radius: 999px;
+  content: "";
+  height: 10px;
+  opacity: 0.55;
+  position: absolute;
+  right: 24px;
+  top: -6px;
+  transform: rotate(-2deg);
+  width: 64px;
 }
 
 .output-panel {
@@ -397,7 +460,7 @@ h3 {
 }
 
 .section-heading {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.65rem;
 }
 
 .workspace-heading,
@@ -415,14 +478,33 @@ h3 {
   margin-bottom: 0;
 }
 
+.section-heading h2 {
+  position: relative;
+}
+
+body.theme-cartoon .section-heading h2::after {
+  background: linear-gradient(90deg, var(--header-accent), transparent);
+  border-radius: 999px;
+  content: "";
+  display: block;
+  height: 4px;
+  margin-top: 5px;
+  width: 74px;
+}
+
 #blocklyDiv {
   background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: inset 0 0 0 5px var(--workspace-inset);
+  border: var(--ui-border-width) solid var(--line);
+  border-radius: calc(var(--panel-radius) - 7px);
+  box-shadow: inset 0 0 0 5px var(--workspace-inset), 0 3px 10px rgba(36, 52, 71, 0.04);
   flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
+}
+
+body.theme-cartoon #blocklyDiv {
+  border-style: solid;
+  box-shadow: inset 0 0 0 6px var(--workspace-inset), 0 5px 0 rgba(194, 90, 53, 0.08);
 }
 
 .split-divider {
@@ -438,24 +520,24 @@ h3 {
 }
 
 .split-divider::before {
-  background: color-mix(in srgb, var(--line-strong) 55%, transparent);
+  background: linear-gradient(180deg, transparent 0, color-mix(in srgb, var(--line-strong) 52%, transparent) 16%, color-mix(in srgb, var(--line-strong) 52%, transparent) 84%, transparent 100%);
   border-radius: 999px;
   content: "";
   height: 100%;
   position: absolute;
   transition: background 0.15s ease, width 0.15s ease;
-  width: 4px;
+  width: 3px;
 }
 
 .divider-handle {
   background: var(--panel-strong);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  box-shadow: var(--panel-shadow);
+  border: var(--ui-border-width) solid var(--line);
+  border-radius: var(--control-radius);
+  box-shadow: 0 6px 16px rgba(36, 52, 71, 0.11), var(--soft-shadow);
   display: block;
-  height: 48px;
+  height: 52px;
   position: relative;
-  width: 14px;
+  width: 16px;
   z-index: 1;
 }
 
@@ -489,28 +571,53 @@ h3 {
   background:
     radial-gradient(circle at top right, var(--dialogue-glow), transparent 40%),
     var(--dialogue-bg);
-  border: 1px solid var(--line);
-  border-radius: 20px;
+  border: var(--ui-border-width) solid var(--line);
+  border-radius: calc(var(--panel-radius) - 2px);
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
   min-height: 0;
   padding: 0.85rem;
+  position: relative;
+}
+
+body.theme-cartoon .dialogue-card::after {
+  background:
+    radial-gradient(circle, rgba(239, 123, 69, 0.18) 0 3px, transparent 4px),
+    radial-gradient(circle, rgba(109, 184, 168, 0.16) 0 3px, transparent 4px);
+  background-position: 0 0, 14px 14px;
+  background-size: 28px 28px;
+  border-radius: inherit;
+  content: "";
+  inset: 0;
+  opacity: 0.42;
+  pointer-events: none;
+  position: absolute;
+}
+
+.dialogue-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .character-stage {
   background: var(--stage-bg);
-  border: 1px solid var(--line);
-  border-radius: 18px;
+  border: var(--ui-border-width) solid var(--line);
+  border-radius: calc(var(--panel-radius) - 6px);
   gap: 0.75rem;
   margin-bottom: 0.8rem;
-  padding: 0.65rem;
+  padding: 0.68rem;
+}
+
+body.theme-cartoon .character-stage {
+  box-shadow: 0 4px 0 rgba(194, 90, 53, 0.12), inset 0 2px 0 rgba(255, 255, 255, 0.7);
+  transform: rotate(-0.35deg);
 }
 
 .avatar-frame {
   align-items: center;
   background: var(--avatar-bg);
-  border: 1px solid var(--line);
+  border: var(--ui-border-width) solid var(--line);
   border-radius: 50%;
   box-shadow: 0 4px 14px var(--bubble-shadow);
   display: flex;
@@ -519,6 +626,11 @@ h3 {
   height: 74px;
   justify-content: center;
   width: 74px;
+}
+
+body.theme-cartoon .avatar-frame {
+  border-radius: 42% 58% 48% 52% / 52% 45% 55% 48%;
+  box-shadow: 0 4px 0 rgba(194, 90, 53, 0.12), 0 10px 18px var(--bubble-shadow);
 }
 
 .stage-label {
@@ -541,17 +653,18 @@ h3 {
   align-content: start;
   display: grid;
   flex: 1 1 auto;
-  gap: 0.7rem;
+  gap: 0.72rem;
   min-height: 180px;
   overflow: auto;
-  padding-right: 0.1rem;
+  padding: 0.15rem 0.1rem 0.25rem;
 }
 
 .speech-bubble,
 .question-bubble,
 .reply-bubble {
   border: 1px solid var(--line);
-  border-radius: 17px;
+  border-width: var(--ui-border-width);
+  border-radius: var(--bubble-radius);
   box-shadow: 0 4px 12px var(--bubble-shadow);
   font-size: 1rem;
   line-height: 1.5;
@@ -559,9 +672,41 @@ h3 {
   white-space: pre-wrap;
 }
 
+body.theme-cartoon .speech-bubble,
+body.theme-cartoon .question-bubble,
+body.theme-cartoon .reply-bubble {
+  box-shadow: 0 4px 0 rgba(95, 65, 40, 0.1), 0 10px 18px var(--bubble-shadow);
+}
+
 .speech-bubble,
 .question-bubble {
-  border-top-left-radius: 6px;
+  border-top-left-radius: 7px;
+}
+
+body.theme-cartoon .speech-bubble,
+body.theme-cartoon .question-bubble {
+  border-radius: 7px var(--bubble-radius) var(--bubble-radius) var(--bubble-radius);
+  max-width: 96%;
+}
+
+body.theme-cartoon .speech-bubble::before,
+body.theme-cartoon .question-bubble::before {
+  background: inherit;
+  border-bottom: var(--ui-border-width) solid var(--line);
+  border-left: var(--ui-border-width) solid var(--line);
+  content: "";
+  height: 14px;
+  left: -6px;
+  position: absolute;
+  top: 17px;
+  transform: rotate(35deg);
+  width: 14px;
+}
+
+body.theme-cartoon .speech-bubble,
+body.theme-cartoon .question-bubble,
+body.theme-cartoon .reply-bubble {
+  position: relative;
 }
 
 .speech-bubble {
@@ -575,20 +720,26 @@ h3 {
 .reply-bubble {
   background: var(--reply-bg);
   border-color: color-mix(in srgb, var(--teal) 65%, var(--line));
-  border-top-right-radius: 6px;
+  border-top-right-radius: 7px;
   justify-self: end;
   max-width: 92%;
+}
+
+body.theme-cartoon .reply-bubble {
+  border-radius: var(--bubble-radius) 7px var(--bubble-radius) var(--bubble-radius);
 }
 
 .narrator-bubble {
   background: var(--narrator-bg);
   color: var(--muted);
+  min-height: 86px;
+  padding: 1rem;
 }
 
 .dialogue-input {
   background: var(--reply-bg);
-  border: 1px solid var(--line);
-  border-radius: 16px;
+  border: var(--ui-border-width) solid var(--line);
+  border-radius: calc(var(--panel-radius) - 8px);
   margin-top: 0.8rem;
   padding: 0.7rem;
 }
@@ -630,7 +781,7 @@ h3 {
 
 .panel-tools {
   justify-content: flex-end;
-  margin-top: 0.55rem;
+  margin-top: 0.45rem;
 }
 
 .reset-layout-button {
@@ -638,16 +789,17 @@ h3 {
   border-color: transparent;
   border-radius: 999px;
   color: var(--muted);
-  font-size: 0.86rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  padding: 0.3rem 0.55rem;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  opacity: 0.78;
+  padding: 0.22rem 0.48rem;
+  text-decoration: none;
 }
 
 .reset-layout-button:hover {
   background: color-mix(in srgb, var(--theme-active-bg) 18%, transparent);
   color: var(--ink);
+  opacity: 1;
   text-decoration: none;
 }
 
@@ -655,8 +807,8 @@ h3 {
   background: color-mix(in srgb, var(--panel-strong) 58%, transparent);
   border: 1px dashed var(--disclosure-border);
   border-radius: 14px;
-  margin-top: 0.55rem;
-  padding: 0.65rem 0.75rem;
+  margin-top: 0.45rem;
+  padding: 0.55rem 0.7rem;
 }
 
 .code-disclosure summary {
