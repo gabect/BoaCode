@@ -20,67 +20,66 @@
           </p>
         </div>
 
-        <div class="theme-selector" aria-label="Choose a visual theme">
-          <p class="theme-selector-label">Theme</p>
-          <div class="theme-options" role="group" aria-label="Visual themes">
-            <button class="theme-button active" type="button" data-theme="cartoon" aria-pressed="true">
-              Cartoon Adventure
-            </button>
-            <button class="theme-button" type="button" data-theme="modern" aria-pressed="false">
-              Modern Computers
-            </button>
-            <button class="theme-button" type="button" data-theme="matrix" aria-pressed="false">
-              Matrix Mode
-            </button>
+        <div class="header-controls">
+          <button
+            id="characterButton"
+            class="character-button"
+            type="button"
+            aria-haspopup="dialog"
+            aria-controls="characterDialog"
+          >
+            <span class="character-button-avatar" aria-hidden="true">🤖</span>
+            <span>Choose Character: <strong id="characterButtonName">Robot</strong> ▾</span>
+          </button>
+
+          <div class="theme-selector" aria-label="Choose a visual theme">
+            <p class="theme-selector-label">Theme</p>
+            <div class="theme-options" role="group" aria-label="Visual themes">
+              <button class="theme-button active" type="button" data-theme="cartoon" aria-pressed="true">
+                Cartoon Adventure
+              </button>
+              <button class="theme-button" type="button" data-theme="modern" aria-pressed="false">
+                Modern Computers
+              </button>
+              <button class="theme-button" type="button" data-theme="matrix" aria-pressed="false">
+                Matrix Mode
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </header>
 
-    <main class="app-shell">
-      <div class="activity-column">
-        <section class="panel character-panel" aria-labelledby="character-title">
-          <div class="section-heading">
-            <h2 id="character-title">1. Pick a character</h2>
-            <p>The selected character will say the program output.</p>
+    <main class="app-shell" id="appShell">
+      <section class="panel workspace-panel" aria-labelledby="workspace-title">
+        <div class="section-heading workspace-heading">
+          <div>
+            <h2 id="workspace-title">2. Arrange the blocks</h2>
+            <p>Only simple starter blocks are included.</p>
           </div>
+          <button id="runButton" class="run-button" type="button">Run blocks</button>
+        </div>
+        <div id="blocklyDiv" aria-label="Blockly coding workspace"></div>
+      </section>
 
-          <div class="character-grid" role="radiogroup" aria-label="Character choices">
-            <button class="character-card selected" type="button" data-character="Robot" aria-pressed="true">
-              <span class="character-face" aria-hidden="true">🤖</span>
-              <span>Robot</span>
-            </button>
-            <button class="character-card" type="button" data-character="Detective" aria-pressed="false">
-              <span class="character-face" aria-hidden="true">🕵️</span>
-              <span>Detective</span>
-            </button>
-            <button class="character-card" type="button" data-character="Wizard" aria-pressed="false">
-              <span class="character-face" aria-hidden="true">🧙</span>
-              <span>Wizard</span>
-            </button>
-            <button class="character-card" type="button" data-character="Astronaut" aria-pressed="false">
-              <span class="character-face" aria-hidden="true">👩‍🚀</span>
-              <span>Astronaut</span>
-            </button>
-          </div>
-        </section>
-
-        <section class="panel workspace-panel" aria-labelledby="workspace-title">
-          <div class="section-heading workspace-heading">
-            <div>
-              <h2 id="workspace-title">2. Arrange the blocks</h2>
-              <p>Only simple starter blocks are included.</p>
-            </div>
-            <button id="runButton" class="run-button" type="button">Run blocks</button>
-          </div>
-          <div id="blocklyDiv" aria-label="Blockly coding workspace"></div>
-        </section>
-      </div>
+      <div
+        id="splitDivider"
+        class="split-divider"
+        role="separator"
+        aria-label="Resize Blockly workspace and result panels"
+        aria-orientation="vertical"
+        aria-valuemin="60"
+        aria-valuemax="80"
+        tabindex="0"
+      ></div>
 
       <section class="panel output-panel" aria-labelledby="output-title">
-        <div class="section-heading">
-          <h2 id="output-title">3. Read the result</h2>
-          <p>The selected character asks and answers inside the story scene.</p>
+        <div class="section-heading output-heading">
+          <div>
+            <h2 id="output-title">3. Read the result</h2>
+            <p>The selected character asks and answers inside the story scene.</p>
+          </div>
+          <button id="resetLayoutButton" class="reset-layout-button" type="button">Reset layout</button>
         </div>
 
         <article class="dialogue-card" aria-live="polite">
@@ -113,6 +112,39 @@
         </details>
       </section>
     </main>
+
+    <dialog id="characterDialog" class="character-dialog" aria-labelledby="character-dialog-title">
+      <form method="dialog" class="character-dialog-card">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">Character picker</p>
+            <h2 id="character-dialog-title">Choose who reads the result</h2>
+          </div>
+          <button class="dialog-close-button" type="submit" aria-label="Close character picker">×</button>
+        </div>
+
+        <div class="character-grid dialog-character-grid" role="radiogroup" aria-label="Character choices">
+          <button class="character-card selected" type="button" data-character="Robot" aria-pressed="true">
+            <span class="character-face" aria-hidden="true">🤖</span>
+            <span>Robot</span>
+          </button>
+          <button class="character-card" type="button" data-character="Detective" aria-pressed="false">
+            <span class="character-face" aria-hidden="true">🕵️</span>
+            <span>Detective</span>
+          </button>
+          <button class="character-card" type="button" data-character="Wizard" aria-pressed="false">
+            <span class="character-face" aria-hidden="true">🧙</span>
+            <span>Wizard</span>
+          </button>
+          <button class="character-card" type="button" data-character="Astronaut" aria-pressed="false">
+            <span class="character-face" aria-hidden="true">👩‍🚀</span>
+            <span>Astronaut</span>
+          </button>
+        </div>
+
+        <button class="cancel-button" type="submit">Cancel</button>
+      </form>
+    </dialog>
 
     <xml id="toolbox" style="display: none">
       <category name="Starter Blocks" colour="#d85f33">

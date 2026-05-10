@@ -9,10 +9,16 @@ const characterFaces = {
   Astronaut: "👩‍🚀",
 };
 
-let selectedCharacter = "Robot";
-
+const characterNames = Object.keys(characterFaces);
+const characterStorageKey = "boacode-character";
 const themeStorageKey = "boacode-theme";
+const splitStorageKey = "boacode-workspace-width";
+const defaultWorkspaceSplit = 75;
+const minWorkspaceSplit = 60;
+const maxWorkspaceSplit = 80;
+const desktopSplitQuery = "(min-width: 1041px)";
 const themeNames = ["cartoon", "modern", "matrix"];
+let selectedCharacter = "Robot";
 
 // Blockly's variable field gives students one simple variable menu, plus the
 // toolbox button below lets them create their own beginner-friendly names.
@@ -220,11 +226,24 @@ const dialogueInputLabel = document.getElementById("dialogueInputLabel");
 const dialogueInput = document.getElementById("dialogueInput");
 const runButton = document.getElementById("runButton");
 const themeButtons = document.querySelectorAll(".theme-button");
+const appShell = document.getElementById("appShell");
+const splitDivider = document.getElementById("splitDivider");
+const characterButton = document.getElementById("characterButton");
+const characterButtonAvatar = document.querySelector(".character-button-avatar");
+const characterButtonName = document.getElementById("characterButtonName");
+const characterDialog = document.getElementById("characterDialog");
+const resetLayoutButton = document.getElementById("resetLayoutButton");
 let activeInputResolver = null;
+let splitDragFrame = null;
 
 function getSavedTheme() {
   const savedTheme = localStorage.getItem(themeStorageKey);
   return themeNames.includes(savedTheme) ? savedTheme : "cartoon";
+}
+
+function getSavedCharacter() {
+  const savedCharacter = localStorage.getItem(characterStorageKey);
+  return characterNames.includes(savedCharacter) ? savedCharacter : "Robot";
 }
 
 // Themes are cosmetic only: they swap body classes and leave Blockly/runtime logic unchanged.
@@ -242,16 +261,25 @@ function applyTheme(theme) {
   });
 }
 
-function chooseCharacter(character) {
-  selectedCharacter = character;
-  speakerAvatar.textContent = characterFaces[character];
-  speakerName.textContent = character;
+function chooseCharacter(character, closeDialog = false) {
+  const safeCharacter = characterNames.includes(character) ? character : "Robot";
+  selectedCharacter = safeCharacter;
+  localStorage.setItem(characterStorageKey, safeCharacter);
+  speakerAvatar.textContent = characterFaces[safeCharacter];
+  speakerName.textContent = safeCharacter;
+  characterButtonAvatar.textContent = characterFaces[safeCharacter];
+  characterButtonName.textContent = safeCharacter;
 
   document.querySelectorAll(".character-card").forEach((card) => {
-    const isSelected = card.dataset.character === character;
+    const isSelected = card.dataset.character === safeCharacter;
     card.classList.toggle("selected", isSelected);
     card.setAttribute("aria-pressed", String(isSelected));
   });
+
+  if (closeDialog && characterDialog.open) {
+    characterDialog.close();
+    characterButton.focus();
+  }
 }
 
 function escapePythonString(text) {
@@ -357,6 +385,106 @@ function appendDialogue(text, className = "speech-bubble") {
   bubble.textContent = text;
   dialogueOutput.appendChild(bubble);
   bubble.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function resizeBlocklyWorkspace() {
+  Blockly.svgResize(workspace);
+}
+
+function isDesktopSplitLayout() {
+  return window.matchMedia(desktopSplitQuery).matches;
+}
+
+function getClampedWorkspacePercent(percent) {
+  return Math.min(maxWorkspaceSplit, Math.max(minWorkspaceSplit, percent));
+}
+
+function getSafeSavedWorkspacePercent() {
+  const savedSplit = localStorage.getItem(splitStorageKey);
+  const savedPercent = Number(savedSplit);
+
+  if (savedSplit === null || !Number.isFinite(savedPercent)) {
+    return { percent: defaultWorkspaceSplit, wasReset: savedSplit !== null };
+  }
+
+  if (savedPercent < minWorkspaceSplit || savedPercent > maxWorkspaceSplit) {
+    return { percent: defaultWorkspaceSplit, wasReset: true };
+  }
+
+  return { percent: getClampedWorkspacePercent(savedPercent), wasReset: false };
+}
+
+function setWorkspacePercent(percent, shouldSave = false) {
+  const clampedPercent = getClampedWorkspacePercent(Number(percent));
+  const safePercent = Number.isFinite(clampedPercent) ? clampedPercent : defaultWorkspaceSplit;
+  appShell.style.setProperty("--workspace-width", `${safePercent}%`);
+  splitDivider.setAttribute("aria-valuenow", String(Math.round(safePercent)));
+
+  if (shouldSave) {
+    localStorage.setItem(splitStorageKey, String(safePercent));
+  }
+
+  if (splitDragFrame) {
+    cancelAnimationFrame(splitDragFrame);
+  }
+
+  splitDragFrame = requestAnimationFrame(() => {
+    resizeBlocklyWorkspace();
+    splitDragFrame = null;
+  });
+}
+
+function resetWorkspaceSplit() {
+  setWorkspacePercent(defaultWorkspaceSplit, true);
+}
+
+function validateDesktopSplitPlacement() {
+  if (!isDesktopSplitLayout()) return;
+
+  const workspaceRect = document.querySelector(".workspace-panel").getBoundingClientRect();
+  const outputRect = document.querySelector(".output-panel").getBoundingClientRect();
+
+  if (outputRect.top > workspaceRect.top + 20 || outputRect.left <= workspaceRect.left) {
+    resetWorkspaceSplit();
+  }
+}
+
+function applySavedSplit() {
+  if (!isDesktopSplitLayout()) {
+    setWorkspacePercent(defaultWorkspaceSplit);
+    return;
+  }
+
+  const { percent, wasReset } = getSafeSavedWorkspacePercent();
+  setWorkspacePercent(percent, wasReset);
+  requestAnimationFrame(validateDesktopSplitPlacement);
+}
+
+function updateSplitFromPointer(clientX, shouldSave = true) {
+  const shellRect = appShell.getBoundingClientRect();
+  const rawPercent = ((clientX - shellRect.left) / shellRect.width) * 100;
+  setWorkspacePercent(rawPercent, shouldSave);
+}
+
+function beginSplitDrag(event) {
+  if (!isDesktopSplitLayout()) return;
+
+  splitDivider.classList.add("dragging");
+  splitDivider.setPointerCapture(event.pointerId);
+  updateSplitFromPointer(event.clientX);
+}
+
+function dragSplit(event) {
+  if (!splitDivider.classList.contains("dragging")) return;
+  updateSplitFromPointer(event.clientX);
+}
+
+function endSplitDrag(event) {
+  if (!splitDivider.classList.contains("dragging")) return;
+
+  splitDivider.classList.remove("dragging");
+  splitDivider.releasePointerCapture(event.pointerId);
+  updateSplitFromPointer(event.clientX);
 }
 
 function showInputPrompt(promptText) {
@@ -471,7 +599,41 @@ async function runProgram() {
 }
 
 document.querySelectorAll(".character-card").forEach((card) => {
-  card.addEventListener("click", () => chooseCharacter(card.dataset.character));
+  card.addEventListener("click", () => chooseCharacter(card.dataset.character, true));
+});
+
+characterButton.addEventListener("click", () => {
+  characterDialog.showModal();
+  characterDialog.querySelector(".character-card.selected")?.focus();
+});
+
+characterDialog.addEventListener("close", () => {
+  characterButton.focus();
+});
+
+splitDivider.addEventListener("pointerdown", beginSplitDrag);
+splitDivider.addEventListener("pointermove", dragSplit);
+splitDivider.addEventListener("pointerup", endSplitDrag);
+splitDivider.addEventListener("pointercancel", endSplitDrag);
+splitDivider.addEventListener("keydown", (event) => {
+  const currentPercent = Number(splitDivider.getAttribute("aria-valuenow")) || defaultWorkspaceSplit;
+
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    setWorkspacePercent(currentPercent - 2, true);
+  }
+
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    setWorkspacePercent(currentPercent + 2, true);
+  }
+});
+
+resetLayoutButton.addEventListener("click", resetWorkspaceSplit);
+
+window.addEventListener("resize", () => {
+  applySavedSplit();
+  resizeBlocklyWorkspace();
 });
 
 themeButtons.forEach((button) => {
@@ -493,4 +655,7 @@ dialogueInputForm.addEventListener("submit", (event) => {
 runButton.addEventListener("click", runProgram);
 workspace.addChangeListener(updateCodePreview);
 applyTheme(getSavedTheme());
+chooseCharacter(getSavedCharacter());
+applySavedSplit();
+resizeBlocklyWorkspace();
 updateCodePreview();
