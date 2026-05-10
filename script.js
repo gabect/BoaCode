@@ -14,9 +14,11 @@ const characterStorageKey = "boacode-character";
 const themeStorageKey = "boacode-theme";
 const splitStorageKey = "boacode-workspace-width";
 const defaultWorkspaceSplit = 75;
-const minWorkspaceSplit = 60;
-const maxWorkspaceSplit = 80;
-const desktopSplitQuery = "(min-width: 1041px)";
+const minWorkspaceSplit = 58;
+const maxWorkspaceSplit = 82;
+const minResultPanelWidth = 320;
+const dividerWidth = 18;
+const desktopSplitQuery = "(min-width: 901px)";
 const themeNames = ["cartoon", "modern", "matrix"];
 let selectedCharacter = "Robot";
 
@@ -236,14 +238,48 @@ const resetLayoutButton = document.getElementById("resetLayoutButton");
 let activeInputResolver = null;
 let splitDragFrame = null;
 
+function readSavedSetting(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function saveSetting(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Private or restricted browser contexts may block localStorage; defaults still keep the app usable.
+  }
+}
+
 function getSavedTheme() {
-  const savedTheme = localStorage.getItem(themeStorageKey);
-  return themeNames.includes(savedTheme) ? savedTheme : "cartoon";
+  const savedTheme = readSavedSetting(themeStorageKey);
+
+  if (themeNames.includes(savedTheme)) {
+    return savedTheme;
+  }
+
+  if (savedTheme !== null) {
+    saveSetting(themeStorageKey, "cartoon");
+  }
+
+  return "cartoon";
 }
 
 function getSavedCharacter() {
-  const savedCharacter = localStorage.getItem(characterStorageKey);
-  return characterNames.includes(savedCharacter) ? savedCharacter : "Robot";
+  const savedCharacter = readSavedSetting(characterStorageKey);
+
+  if (characterNames.includes(savedCharacter)) {
+    return savedCharacter;
+  }
+
+  if (savedCharacter !== null) {
+    saveSetting(characterStorageKey, "Robot");
+  }
+
+  return "Robot";
 }
 
 // Themes are cosmetic only: they swap body classes and leave Blockly/runtime logic unchanged.
@@ -252,19 +288,21 @@ function applyTheme(theme) {
 
   themeNames.forEach((themeName) => document.body.classList.remove(`theme-${themeName}`));
   document.body.classList.add(`theme-${selectedTheme}`);
-  localStorage.setItem(themeStorageKey, selectedTheme);
+  saveSetting(themeStorageKey, selectedTheme);
 
   themeButtons.forEach((button) => {
     const isSelected = button.dataset.theme === selectedTheme;
     button.classList.toggle("active", isSelected);
     button.setAttribute("aria-pressed", String(isSelected));
   });
+
+  requestAnimationFrame(resizeBlocklyWorkspace);
 }
 
 function chooseCharacter(character, closeDialog = false) {
   const safeCharacter = characterNames.includes(character) ? character : "Robot";
   selectedCharacter = safeCharacter;
-  localStorage.setItem(characterStorageKey, safeCharacter);
+  saveSetting(characterStorageKey, safeCharacter);
   speakerAvatar.textContent = characterFaces[safeCharacter];
   speakerName.textContent = safeCharacter;
   characterButtonAvatar.textContent = characterFaces[safeCharacter];
@@ -395,12 +433,24 @@ function isDesktopSplitLayout() {
   return window.matchMedia(desktopSplitQuery).matches;
 }
 
+function getMaxWorkspaceSplitForViewport() {
+  const shellWidth = appShell.getBoundingClientRect().width || window.innerWidth;
+
+  if (!Number.isFinite(shellWidth) || shellWidth <= minResultPanelWidth + dividerWidth) {
+    return maxWorkspaceSplit;
+  }
+
+  const maxPercentWithResultPanel = ((shellWidth - minResultPanelWidth - dividerWidth) / shellWidth) * 100;
+  return Math.max(minWorkspaceSplit, Math.min(maxWorkspaceSplit, maxPercentWithResultPanel));
+}
+
 function getClampedWorkspacePercent(percent) {
-  return Math.min(maxWorkspaceSplit, Math.max(minWorkspaceSplit, percent));
+  const dynamicMax = isDesktopSplitLayout() ? getMaxWorkspaceSplitForViewport() : maxWorkspaceSplit;
+  return Math.min(dynamicMax, Math.max(minWorkspaceSplit, percent));
 }
 
 function getSafeSavedWorkspacePercent() {
-  const savedSplit = localStorage.getItem(splitStorageKey);
+  const savedSplit = readSavedSetting(splitStorageKey);
   const savedPercent = Number(savedSplit);
 
   if (savedSplit === null || !Number.isFinite(savedPercent)) {
@@ -421,7 +471,7 @@ function setWorkspacePercent(percent, shouldSave = false) {
   splitDivider.setAttribute("aria-valuenow", String(Math.round(safePercent)));
 
   if (shouldSave) {
-    localStorage.setItem(splitStorageKey, String(safePercent));
+    saveSetting(splitStorageKey, String(safePercent));
   }
 
   if (splitDragFrame) {

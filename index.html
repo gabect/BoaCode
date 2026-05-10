@@ -9,44 +9,44 @@
     <script src="https://unpkg.com/blockly/blockly.min.js"></script>
   </head>
   <body class="theme-cartoon">
-    <header class="page-header">
-      <div class="header-content">
+    <header class="app-topbar">
+      <div class="brand-cluster" aria-label="BoaCode activity">
+        <div class="brand-mark" aria-hidden="true">B</div>
         <div>
-          <p class="eyebrow">BoaCode Classroom Activity</p>
-          <h1>Build a Tiny Dialogue Program</h1>
-          <p class="intro">
-            Choose a character, snap together a few Python-style blocks, and run
-            the activity to see your output as dialogue.
-          </p>
+          <p class="app-name">BoaCode</p>
+          <h1>Tiny Dialogue Program</h1>
         </div>
+      </div>
 
-        <div class="header-controls">
-          <button
-            id="characterButton"
-            class="character-button"
-            type="button"
-            aria-haspopup="dialog"
-            aria-controls="characterDialog"
-          >
-            <span class="character-button-avatar" aria-hidden="true">🤖</span>
-            <span>Choose Character: <strong id="characterButtonName">Robot</strong> ▾</span>
-          </button>
+      <div class="topbar-actions">
+        <button
+          id="characterButton"
+          class="character-button"
+          type="button"
+          aria-haspopup="dialog"
+          aria-controls="characterDialog"
+        >
+          <span class="character-button-avatar" aria-hidden="true">🤖</span>
+          <span class="character-button-label">Character: <strong id="characterButtonName">Robot</strong></span>
+          <span class="dropdown-arrow" aria-hidden="true">▾</span>
+        </button>
 
-          <div class="theme-selector" aria-label="Choose a visual theme">
-            <p class="theme-selector-label">Theme</p>
-            <div class="theme-options" role="group" aria-label="Visual themes">
-              <button class="theme-button active" type="button" data-theme="cartoon" aria-pressed="true">
-                Cartoon Adventure
-              </button>
-              <button class="theme-button" type="button" data-theme="modern" aria-pressed="false">
-                Modern Computers
-              </button>
-              <button class="theme-button" type="button" data-theme="matrix" aria-pressed="false">
-                Matrix Mode
-              </button>
-            </div>
+        <div class="theme-selector" aria-label="Choose a visual theme">
+          <span class="theme-selector-label">Theme</span>
+          <div class="theme-options" role="group" aria-label="Visual themes">
+            <button class="theme-button active" type="button" data-theme="cartoon" aria-pressed="true">
+              Cartoon Adventure
+            </button>
+            <button class="theme-button" type="button" data-theme="modern" aria-pressed="false">
+              Modern Computers
+            </button>
+            <button class="theme-button" type="button" data-theme="matrix" aria-pressed="false">
+              Matrix Mode
+            </button>
           </div>
         </div>
+
+        <button id="runButton" class="run-button" type="button">Run Blocks</button>
       </div>
     </header>
 
@@ -54,10 +54,9 @@
       <section class="panel workspace-panel" aria-labelledby="workspace-title">
         <div class="section-heading workspace-heading">
           <div>
-            <h2 id="workspace-title">2. Arrange the blocks</h2>
-            <p>Only simple starter blocks are included.</p>
+            <h2 id="workspace-title">Arrange the blocks</h2>
+            <p>Build a simple conversation, then run it from the top bar.</p>
           </div>
-          <button id="runButton" class="run-button" type="button">Run blocks</button>
         </div>
         <div id="blocklyDiv" aria-label="Blockly coding workspace"></div>
       </section>
@@ -68,18 +67,19 @@
         role="separator"
         aria-label="Resize Blockly workspace and result panels"
         aria-orientation="vertical"
-        aria-valuemin="60"
-        aria-valuemax="80"
+        aria-valuemin="58"
+        aria-valuemax="82"
         tabindex="0"
-      ></div>
+      >
+        <span class="divider-handle" aria-hidden="true"></span>
+      </div>
 
       <section class="panel output-panel" aria-labelledby="output-title">
         <div class="section-heading output-heading">
           <div>
-            <h2 id="output-title">3. Read the result</h2>
-            <p>The selected character asks and answers inside the story scene.</p>
+            <h2 id="output-title">Read the result</h2>
+            <p>Watch the selected character ask questions and speak your output.</p>
           </div>
-          <button id="resetLayoutButton" class="reset-layout-button" type="button">Reset layout</button>
         </div>
 
         <article class="dialogue-card" aria-live="polite">
@@ -105,6 +105,10 @@
             </div>
           </form>
         </article>
+
+        <div class="panel-tools" aria-label="Layout tools">
+          <button id="resetLayoutButton" class="reset-layout-button" type="button">Reset panels</button>
+        </div>
 
         <details class="code-disclosure">
           <summary>Teacher View: Code Behind the Blocks</summary>
