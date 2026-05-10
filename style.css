@@ -144,49 +144,55 @@ body.theme-modern {
   --header-accent: #2563eb;
 }
 
-body.theme-matrix {
-  --cream: #07130d;
-  --paper: #102117;
-  --panel: #102117;
-  --panel-strong: #13281c;
-  --orange: #33ff88;
-  --red: #21b86b;
-  --blue: #30d979;
-  --teal: #69f0ae;
-  --ink: #e8fff1;
-  --muted: #a5d6b8;
-  --line: rgba(105, 240, 174, 0.28);
-  --line-strong: rgba(105, 240, 174, 0.5);
-  --white: #ffffff;
-  --button-text: #041108;
-  --bubble-shadow: rgba(51, 255, 136, 0.12);
-  --output-bg: #0b1a11;
-  --dialogue-bg: #102117;
-  --dialogue-glow: rgba(51, 255, 136, 0.1);
-  --theme-control-bg: #0b1a11;
-  --theme-active-bg: #33ff88;
-  --theme-active-text: #041108;
-  --stage-bg: #12281a;
-  --avatar-bg: #07130d;
-  --speech-bg: #17351f;
-  --question-bg: #102d22;
-  --reply-bg: #0f2418;
-  --narrator-bg: #0f2418;
-  --code-bg: #0c1a11;
-  --code-border: rgba(105, 240, 174, 0.28);
-  --disclosure-border: rgba(105, 240, 174, 0.3);
-  --character-one: #17351f;
-  --character-two: #123b2c;
-  --character-three: #183229;
-  --character-four: #102d22;
-  --panel-shadow: 0 0 0 1px rgba(51, 255, 136, 0.08), 0 14px 32px rgba(0, 0, 0, 0.34);
-  --workspace-ring: rgba(51, 255, 136, 0.14);
-  --workspace-inset: rgba(51, 255, 136, 0.04);
+body.theme-hacker {
+  --cream: #06100b;
+  --paper: #0d1a13;
+  --panel: #101f17;
+  --panel-strong: #14261c;
+  --orange: #6dbf73;
+  --red: #3f8d55;
+  --blue: #4f9b62;
+  --teal: #44a889;
+  --ink: #e7f3e8;
+  --muted: #a9c2ad;
+  --line: rgba(117, 176, 125, 0.24);
+  --line-strong: rgba(128, 194, 137, 0.42);
+  --white: #111f17;
+  --button-text: #07110b;
+  --bubble-shadow: rgba(0, 0, 0, 0.24);
+  --output-bg: #0a150f;
+  --dialogue-bg: #0f1d15;
+  --dialogue-glow: rgba(92, 145, 83, 0.14);
+  --theme-control-bg: #0a150f;
+  --theme-active-bg: #86c77d;
+  --theme-active-text: #07110b;
+  --stage-bg: #13251b;
+  --avatar-bg: #07110b;
+  --speech-bg: #172b20;
+  --question-bg: #123123;
+  --reply-bg: #0f2218;
+  --narrator-bg: #0f2218;
+  --code-bg: #07110b;
+  --code-border: rgba(126, 178, 119, 0.28);
+  --disclosure-border: rgba(126, 178, 119, 0.3);
+  --character-one: #172b20;
+  --character-two: #123126;
+  --character-three: #1c2f22;
+  --character-four: #152a1d;
+  --panel-shadow: 0 0 0 1px rgba(102, 158, 95, 0.1), 0 18px 34px rgba(0, 0, 0, 0.38);
+  --workspace-ring: rgba(102, 158, 95, 0.16);
+  --workspace-inset: rgba(109, 191, 115, 0.05);
+  --blockly-bg: #0b1710;
+  --blockly-grid: rgba(108, 151, 100, 0.12);
   --panel-radius: 18px;
-  --control-radius: 8px;
+  --control-radius: 10px;
   --ui-border-width: 1px;
   --bubble-radius: 10px;
-  --header-accent: #33ff88;
+  --header-accent: #6dbf73;
+  background:
+    radial-gradient(circle at 10% 12%, rgba(74, 123, 70, 0.18), transparent 25%),
+    radial-gradient(circle at 86% 84%, rgba(46, 94, 64, 0.2), transparent 28%),
+    linear-gradient(180deg, #07110b 0%, #0a150f 100%);
 }
 
 button,
@@ -509,7 +515,7 @@ body.theme-cartoon .section-heading h2::after {
 }
 
 #blocklyDiv {
-  background: var(--white);
+  background: var(--blockly-bg, var(--white));
   border: var(--ui-border-width) solid var(--line);
   border-radius: calc(var(--panel-radius) - 7px);
   box-shadow: inset 0 0 0 5px var(--workspace-inset), 0 3px 10px rgba(36, 52, 71, 0.04);
@@ -521,6 +527,43 @@ body.theme-cartoon .section-heading h2::after {
 body.theme-cartoon #blocklyDiv {
   border-style: solid;
   box-shadow: inset 0 0 0 6px var(--workspace-inset), 0 5px 0 rgba(194, 90, 53, 0.08);
+}
+
+body.theme-hacker #blocklyDiv {
+  border-color: rgba(128, 194, 137, 0.34);
+  box-shadow: inset 0 0 0 5px var(--workspace-inset), 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+body.theme-hacker .blocklyMainBackground {
+  fill: var(--blockly-bg);
+  stroke: rgba(128, 194, 137, 0.34);
+}
+
+body.theme-hacker .blocklyScrollbarBackground,
+body.theme-hacker .blocklyScrollbarHandle {
+  fill: #213729;
+}
+
+body.theme-hacker .blocklyFlyoutBackground {
+  fill: #0f1d15;
+  fill-opacity: 0.96;
+}
+
+body.theme-hacker .blocklyToolboxDiv {
+  background: #0f1d15;
+  color: var(--ink);
+}
+
+body.theme-hacker .blocklyTreeLabel,
+body.theme-hacker .blocklyText {
+  fill: #f0f8ee;
+  color: #e7f3e8;
+}
+
+body.theme-hacker .blocklyEditableText > rect,
+body.theme-hacker .blocklyFieldRect {
+  fill: rgba(7, 17, 11, 0.72);
+  stroke: rgba(216, 239, 211, 0.26);
 }
 
 .split-divider {
