@@ -185,9 +185,11 @@ body.theme-hacker {
   --blockly-bg: #08140e;
   --blockly-grid: rgba(108, 151, 100, 0.12);
   --blockly-flyout-bg: #0d1d14;
-  --blockly-toolbox-bg: #102217;
-  --blockly-toolbox-selected-bg: #1b3a26;
-  --blockly-toolbox-text: #eaf7e6;
+  --blockly-toolbox-bg: #0b1710;
+  --blockly-toolbox-row-bg: #13271d;
+  --blockly-toolbox-selected-bg: #102018;
+  --blockly-toolbox-text: #e6ffe9;
+  --blockly-toolbox-accent: #42f584;
   --blockly-scrollbar-bg: #14251a;
   --blockly-scrollbar-handle: #4d7754;
   --panel-radius: 18px;
@@ -551,51 +553,91 @@ body.theme-hacker .blocklyMainBackground {
 }
 
 body.theme-hacker .blocklyToolboxDiv {
-  background: var(--blockly-toolbox-bg);
-  border-right: 1px solid rgba(128, 194, 137, 0.26);
+  background: linear-gradient(180deg, #08140e 0%, var(--blockly-toolbox-bg) 100%) !important;
+  border-right: 1px solid rgba(66, 245, 132, 0.34);
   color: var(--blockly-toolbox-text);
 }
 
-body.theme-hacker .blocklyToolboxDiv .blocklyTreeRow {
-  background: #14291c;
+body.theme-hacker .blocklyToolboxContents {
+  background: transparent !important;
+}
+
+body.theme-hacker .blocklyToolboxDiv .blocklyTreeRow,
+body.theme-hacker .blocklyToolboxCategory {
+  background: var(--blockly-toolbox-row-bg) !important;
+  border: 1px solid rgba(66, 245, 132, 0.34);
+  border-left: 4px solid var(--blockly-toolbox-accent);
   border-radius: 9px;
-  color: var(--blockly-toolbox-text);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(230, 255, 233, 0.08);
+  color: var(--blockly-toolbox-text) !important;
   margin: 6px 8px 4px;
   min-height: 34px;
   padding: 4px 8px;
 }
 
-body.theme-hacker .blocklyToolboxDiv .blocklyTreeRow:hover {
-  background: #1d3b28;
+body.theme-hacker .blocklyToolboxDiv .blocklyTreeRow:hover,
+body.theme-hacker .blocklyToolboxCategory:hover {
+  background: #1a3325 !important;
+  border-color: rgba(66, 245, 132, 0.56);
 }
 
 body.theme-hacker .blocklyToolboxDiv .blocklyTreeSelected,
-body.theme-hacker .blocklyToolboxDiv .blocklyTreeSelected:hover {
+body.theme-hacker .blocklyToolboxDiv .blocklyTreeSelected:hover,
+body.theme-hacker .blocklyToolboxCategory[aria-selected="true"],
+body.theme-hacker .blocklyToolboxSelected {
   background: var(--blockly-toolbox-selected-bg) !important;
-  box-shadow: inset 4px 0 0 #7ad26f;
+  border-color: var(--blockly-toolbox-accent);
+  box-shadow: inset 4px 0 0 var(--blockly-toolbox-accent), 0 0 16px rgba(66, 245, 132, 0.16);
 }
 
-body.theme-hacker .blocklyTreeLabel {
-  color: var(--blockly-toolbox-text);
+body.theme-hacker .blocklyTreeIcon,
+body.theme-hacker .blocklyToolboxCategoryIcon {
+  background-color: var(--blockly-toolbox-accent) !important;
+  background-image: none !important;
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(66, 245, 132, 0.3);
+  color: var(--blockly-toolbox-accent) !important;
+  height: 12px !important;
+  margin-inline-end: 8px;
+  opacity: 1;
+  width: 12px !important;
+}
+
+body.theme-hacker .blocklyTreeLabel,
+body.theme-hacker .blocklyToolboxCategoryLabel {
+  color: var(--blockly-toolbox-text) !important;
   font-weight: 800;
-  text-shadow: none;
+  text-shadow: 0 0 8px rgba(66, 245, 132, 0.24);
 }
 
-body.theme-hacker .blocklyTreeSelected .blocklyTreeLabel {
-  color: #f4fff2;
+body.theme-hacker .blocklyTreeSelected .blocklyTreeLabel,
+body.theme-hacker .blocklyToolboxCategory[aria-selected="true"] .blocklyToolboxCategoryLabel,
+body.theme-hacker .blocklyToolboxSelected .blocklyToolboxCategoryLabel {
+  color: #f8fff5 !important;
+}
+
+body.theme-hacker .blocklyFlyout,
+body.theme-hacker .blocklyFlyout .blocklyWorkspace {
+  background: var(--blockly-flyout-bg) !important;
 }
 
 body.theme-hacker .blocklyFlyoutBackground {
-  fill: var(--blockly-flyout-bg);
-  fill-opacity: 0.98;
-  stroke: rgba(128, 194, 137, 0.22);
+  fill: var(--blockly-flyout-bg) !important;
+  fill-opacity: 1;
+  stroke: rgba(66, 245, 132, 0.3);
+}
+
+body.theme-hacker .blocklyFlyoutLabelBackground {
+  fill: #13271d !important;
+  stroke: var(--blockly-toolbox-accent) !important;
+  stroke-width: 1px;
 }
 
 body.theme-hacker .blocklyFlyoutLabelText,
 body.theme-hacker .blocklyFlyoutButton .blocklyText,
 body.theme-hacker .blocklyText {
-  fill: #f0f8ee;
-  color: #e7f3e8;
+  fill: #e6ffe9 !important;
+  color: #e6ffe9 !important;
 }
 
 body.theme-hacker .blocklyFlyoutButton .blocklyFlyoutButtonBackground {
