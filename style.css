@@ -537,6 +537,43 @@ body.theme-cartoon #blocklyDiv {
   box-shadow: inset 0 0 0 6px var(--workspace-inset), 0 5px 0 rgba(194, 90, 53, 0.08);
 }
 
+.blocklyToolboxDiv {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 136px;
+  overflow: hidden;
+  padding: 8px 7px;
+}
+
+.blocklyToolboxContents {
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 0;
+}
+
+.blocklyToolboxDiv .blocklyTreeRow,
+.blocklyToolboxCategory {
+  box-sizing: border-box;
+  margin: 5px 0;
+  max-width: 100%;
+  min-height: 36px;
+  overflow: hidden;
+  padding: 6px 12px 6px 14px !important;
+  white-space: nowrap;
+}
+
+.blocklyTreeLabel,
+.blocklyToolboxCategoryLabel {
+  box-sizing: border-box;
+  display: inline-block;
+  line-height: 1.25;
+  max-width: 100%;
+  overflow: visible;
+  padding-inline-end: 4px;
+  white-space: nowrap;
+}
+
 body.theme-hacker #blocklyDiv {
   background: var(--blockly-bg);
   border-color: rgba(128, 194, 137, 0.34);
