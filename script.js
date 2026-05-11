@@ -56,6 +56,10 @@ const blockTypesByPaletteKey = {
   operators: ["boa_equals", "boa_and", "boa_or"],
   conditionals: ["boa_if_else"],
 };
+const starterBlocksCategoryColours = {
+  default: "#d85f33",
+  hacker: "#7ad26f",
+};
 
 function blockColour(paletteKey) {
   return blockPalettes[activeBlockPalette][paletteKey];
@@ -276,6 +280,8 @@ const characterButtonName = document.getElementById("characterButtonName");
 const characterDialog = document.getElementById("characterDialog");
 const resetLayoutButton = document.getElementById("resetLayoutButton");
 const brandLogo = document.querySelector(".brand-logo");
+const toolboxXml = document.getElementById("toolbox");
+const starterBlocksCategory = toolboxXml.querySelector('category[name="Starter Blocks"]');
 let activeInputResolver = null;
 let splitDragFrame = null;
 
@@ -368,6 +374,16 @@ function getSavedCharacter() {
   return defaultCharacter;
 }
 
+function applyBlocklyStarterBlocksCategoryColour(theme) {
+  const colour = theme === "hacker" ? starterBlocksCategoryColours.hacker : starterBlocksCategoryColours.default;
+  starterBlocksCategory.setAttribute("colour", colour);
+
+  if (typeof workspace.updateToolbox === "function") {
+    workspace.updateToolbox(toolboxXml);
+    workspace.getToolbox()?.refreshSelection?.();
+  }
+}
+
 function applyBlocklyBlockPalette(theme) {
   activeBlockPalette = theme === "hacker" ? "hacker" : "default";
 
@@ -387,6 +403,7 @@ function applyTheme(theme) {
   themeNames.forEach((themeName) => document.body.classList.remove(`theme-${themeName}`));
   document.body.classList.add(`theme-${selectedTheme}`);
   saveSetting(themeStorageKey, selectedTheme);
+  applyBlocklyStarterBlocksCategoryColour(selectedTheme);
   applyBlocklyBlockPalette(selectedTheme);
 
   themeButtons.forEach((button) => {
