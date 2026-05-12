@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BoaCode Python Lab</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.29.4/full/pyodide.js"></script>
+  </head>
+  <body class="theme-cartoon lab-page">
+    <header class="app-topbar lab-topbar">
+      <div class="brand-cluster" aria-label="BoaCode Python Lab">
+        <img class="brand-logo" src="img/boa(code)2.png" alt="BoaCode" />
+        <div class="brand-copy">
+          <h1 class="brand-tagline">BoaCode Python Lab</h1>
+          <p class="brand-subtitle">Write and run beginner Python in your browser</p>
+        </div>
+      </div>
+
+      <nav class="main-nav app-nav" aria-label="Main navigation">
+        <a class="nav-link" href="index.html">Home</a>
+        <a class="nav-link" href="app.html">Blocks</a>
+        <a class="nav-link active" href="python-lab.html" aria-current="page">Python Lab</a>
+      </nav>
+
+      <div class="topbar-actions lab-actions">
+        <div class="theme-selector" aria-label="Choose a visual theme">
+          <span class="theme-selector-label">Theme</span>
+          <div class="theme-options" role="group" aria-label="Visual themes">
+            <button class="theme-button active" type="button" data-theme="cartoon" aria-pressed="true">
+              Cartoon Adventure
+            </button>
+            <button class="theme-button" type="button" data-theme="modern" aria-pressed="false">
+              Modern Computers
+            </button>
+            <button class="theme-button" type="button" data-theme="hacker" aria-pressed="false">
+              Hacker Mode
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="lab-shell" aria-labelledby="lab-title">
+      <section class="panel lab-intro-panel" aria-labelledby="lab-title">
+        <div>
+          <p class="eyebrow">Python Lab</p>
+          <h2 id="lab-title">A friendly place to try real Python</h2>
+          <p>
+            Pick a starter example or type your own code. BoaCode runs it in your browser with Pyodide,
+            so no class server is needed.
+          </p>
+        </div>
+        <div class="lab-status-card" aria-live="polite">
+          <span class="status-dot" id="statusDot" aria-hidden="true"></span>
+          <span id="runtimeStatus">Python is getting ready…</span>
+        </div>
+      </section>
+
+      <section class="panel examples-panel" aria-labelledby="examples-title">
+        <div class="section-heading">
+          <h2 id="examples-title">Starter examples</h2>
+          <p>Load a classroom-friendly example, then press Run.</p>
+        </div>
+        <div id="exampleButtons" class="example-grid" aria-label="Python starter examples"></div>
+        <p id="exampleDescription" class="example-description" aria-live="polite">
+          Choose an example to learn what it does.
+        </p>
+      </section>
+
+      <section class="panel editor-panel" aria-labelledby="editor-title">
+        <div class="section-heading workspace-heading">
+          <div>
+            <h2 id="editor-title">Code editor</h2>
+            <p>Try print(), variables, strings, numbers, if / else, and simple functions.</p>
+          </div>
+          <button id="runPythonButton" class="run-button" type="button">Run Python</button>
+        </div>
+        <label class="sr-only" for="pythonEditor">Python code editor</label>
+        <textarea id="pythonEditor" class="python-editor" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+      </section>
+
+      <section class="panel input-panel" aria-labelledby="input-title">
+        <div class="section-heading">
+          <h2 id="input-title">Input answers</h2>
+          <p>If your code uses input(), put each answer on its own line before running.</p>
+        </div>
+        <label class="sr-only" for="inputQueue">Answers for input calls</label>
+        <textarea id="inputQueue" class="input-queue" placeholder="Example:\nAda\nblue\n4"></textarea>
+        <p class="input-note">
+          BoaCode will read these answers in order and show the question plus answer in the output.
+        </p>
+      </section>
+
+      <section class="panel output-panel lab-output-panel" aria-labelledby="lab-output-title">
+        <div class="section-heading workspace-heading">
+          <div>
+            <h2 id="lab-output-title">Friendly output</h2>
+            <p>Results and helpful error messages appear here.</p>
+          </div>
+          <button id="clearOutputButton" class="reset-layout-button" type="button">Clear Output</button>
+        </div>
+        <pre id="pythonOutput" class="python-output" aria-live="polite">Press Run Python to see your program output here.</pre>
+      </section>
+    </main>
+
+    <script src="python-lab.js"></script>
+  </body>
+</html>
