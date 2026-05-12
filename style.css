@@ -1269,3 +1269,80 @@ code {
     height: 420px;
   }
 }
+
+.landing-page {
+  overflow: auto;
+}
+
+.landing-shell {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: clamp(1.5rem, 4vw, 4rem);
+}
+
+.landing-card {
+  align-items: center;
+  background: color-mix(in srgb, var(--panel-strong) 92%, transparent);
+  border: var(--ui-border-width) solid var(--line);
+  border-radius: clamp(26px, 5vw, 42px);
+  box-shadow: var(--panel-shadow);
+  display: flex;
+  flex-direction: column;
+  max-width: 760px;
+  padding: clamp(2rem, 5vw, 4rem);
+  text-align: center;
+}
+
+.landing-logo {
+  display: block;
+  height: auto;
+  margin-bottom: 1.25rem;
+  max-width: min(320px, 78vw);
+}
+
+.landing-card .eyebrow {
+  color: var(--red);
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  margin: 0 0 0.65rem;
+  text-transform: uppercase;
+}
+
+.landing-card h1 {
+  color: var(--ink);
+  font-size: clamp(2.6rem, 9vw, 5rem);
+  line-height: 0.95;
+  margin: 0;
+}
+
+.landing-copy {
+  color: var(--muted);
+  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+  margin: 1.35rem 0 2rem;
+  max-width: 58ch;
+}
+
+.start-coding-button {
+  background: linear-gradient(135deg, var(--orange), var(--red));
+  border: var(--ui-border-width) solid color-mix(in srgb, var(--red) 76%, var(--ink));
+  border-radius: var(--control-radius);
+  box-shadow: 0 10px 20px rgba(163, 88, 50, 0.2), var(--soft-shadow);
+  color: var(--button-text);
+  display: inline-flex;
+  font-size: 1.1rem;
+  font-weight: 800;
+  padding: 0.95rem 1.5rem;
+  text-decoration: none;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.start-coding-button:hover,
+.start-coding-button:focus-visible {
+  box-shadow: 0 14px 24px rgba(163, 88, 50, 0.26), var(--soft-shadow);
+  transform: translateY(-2px);
+}
