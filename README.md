@@ -43,7 +43,7 @@ Pyodide from a CDN. The lab includes:
 - a Clear Output button
 - a friendly output panel
 - starter examples for hello world, input, if / else, a mini quiz, and greetings
-- an in-page input answer box for beginner `input()` programs
+- an interactive Python Console where `print()`, `input()` prompts, answers, and errors stay together
 
 ## File structure
 
@@ -81,8 +81,8 @@ Python without a custom backend server.
 
 - `script.js` explains the main Blockly setup, code-generation step, and
   JavaScript simulation for BoaCode Blocks.
-- `python-lab.js` loads Pyodide, runs student code, captures output, and provides
-  a simple input queue for `input()`.
+- `python-lab.js` loads Pyodide, runs student code, captures output, and handles
+  beginner `input()` prompts directly in the interactive console.
 - The interface is responsive enough for Chromebooks and small classroom screens.
 - Styling uses the existing BoaCode logo, themes, and warm classroom-friendly
   visual language, with Hacker Mode only when that theme is selected.

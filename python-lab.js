@@ -9,7 +9,6 @@ const examples = [
     description: "Start with print() and make the lab say hello.",
     code: `print("Hello, BoaCode!")
 print("I am learning Python.")`,
-    inputs: "",
   },
   {
     id: "name",
@@ -18,7 +17,6 @@ print("I am learning Python.")`,
     code: `name = input("What is your name? ")
 print("Hi, " + name + "!")
 print("Welcome to Python Lab.")`,
-    inputs: "Sam",
   },
   {
     id: "ifelse",
@@ -30,7 +28,6 @@ if score >= 7:
     print("Great job!")
 else:
     print("Keep practicing — you can do it!")`,
-    inputs: "",
   },
   {
     id: "quiz",
@@ -42,7 +39,6 @@ if answer.lower() == "if":
     print("Correct! if starts a decision.")
 else:
     print("Good try. The answer is if.")`,
-    inputs: "if",
   },
   {
     id: "greeting",
@@ -54,12 +50,10 @@ favorite = input("Favorite animal: ")
 message = "Hello, " + name + "!"
 message = message + " A " + favorite + " would make a fun coding buddy."
 print(message)`,
-    inputs: "Maya\nboa",
   },
 ];
 
 const editor = document.getElementById("pythonEditor");
-const inputQueue = document.getElementById("inputQueue");
 const output = document.getElementById("pythonOutput");
 const runButton = document.getElementById("runPythonButton");
 const clearButton = document.getElementById("clearOutputButton");
@@ -67,8 +61,15 @@ const runtimeStatus = document.getElementById("runtimeStatus");
 const statusDot = document.getElementById("statusDot");
 const exampleButtons = document.getElementById("exampleButtons");
 const exampleDescription = document.getElementById("exampleDescription");
+const consoleInputForm = document.getElementById("consoleInputForm");
+const consoleInputLabel = document.getElementById("consoleInputLabel");
+const consoleInput = document.getElementById("consoleInput");
 const themeButtons = document.querySelectorAll(".theme-button");
 let pyodideReadyPromise;
+let activeRunCode = "";
+let activeInputValues = [];
+let waitingForInput = false;
+let isRunning = false;
 
 function getSavedTheme() {
   const savedTheme = localStorage.getItem(themeStorageKey);
@@ -93,10 +94,30 @@ function setStatus(message, state = "loading") {
   statusDot.dataset.state = state;
 }
 
+function hideConsoleInput() {
+  waitingForInput = false;
+  consoleInputForm.classList.add("hidden");
+  consoleInput.value = "";
+}
+
+function showConsoleInput(promptText) {
+  waitingForInput = true;
+  consoleInputLabel.textContent = promptText || "Python is waiting for your answer:";
+  consoleInput.placeholder = "Type your answer, then press Enter";
+  consoleInputForm.classList.remove("hidden");
+  consoleInput.focus();
+}
+
+function updateConsole(text, extraMessage = "") {
+  const trimmedText = text.trimEnd();
+  output.textContent = [trimmedText, extraMessage].filter(Boolean).join("\n");
+}
+
 function loadExample(example) {
   editor.value = example.code;
-  inputQueue.value = example.inputs;
   exampleDescription.textContent = example.description;
+  hideConsoleInput();
+  updateConsole(`Loaded “${example.title}.” Press Run Python to try it.`);
 
   document.querySelectorAll(".example-button").forEach((button) => {
     button.classList.toggle("active", button.dataset.exampleId === example.id);
@@ -136,50 +157,105 @@ __boa_inputs = json.loads(${JSON.stringify(JSON.stringify(inputValues))})
 __boa_input_index = 0
 __boa_output = io.StringIO()
 
+class BoaCodeInputNeeded(Exception):
+    def __init__(self, prompt):
+        self.prompt = prompt
+
+
 def __boa_input(prompt=""):
     global __boa_input_index
-    print(str(prompt), end="")
+    prompt = str(prompt)
     if __boa_input_index < len(__boa_inputs):
         answer = str(__boa_inputs[__boa_input_index])
         __boa_input_index += 1
+        print(prompt, end="")
         print(answer)
         return answer
-    raise EOFError("BoaCode needs another input answer. Add one answer per line in the Input answers box.")
+    raise BoaCodeInputNeeded(prompt)
 
 __boa_globals = {"__name__": "__main__"}
+__boa_result = {"status": "complete", "output": "", "prompt": "", "error": ""}
+__boa_original_input = builtins.input
 
 with contextlib.redirect_stdout(__boa_output):
     try:
         builtins.input = __boa_input
         exec(__boa_student_code, __boa_globals)
+    except BoaCodeInputNeeded as needed:
+        __boa_result["status"] = "input"
+        __boa_result["prompt"] = needed.prompt or "Python is waiting for your answer:"
     except Exception:
-        traceback.print_exc(limit=4)
+        __boa_result["status"] = "error"
+        __boa_result["error"] = traceback.format_exc(limit=4)
+    finally:
+        builtins.input = __boa_original_input
 
-__boa_output.getvalue()
+__boa_result["output"] = __boa_output.getvalue()
+json.dumps(__boa_result)
 `;
 }
 
-async function runPython() {
+async function continueProgram() {
+  if (isRunning) return;
+
+  isRunning = true;
   runButton.disabled = true;
-  output.textContent = "Running your Python code…";
+  hideConsoleInput();
   setStatus("Python is running…", "loading");
 
   try {
     const pyodide = await getPyodide();
-    const inputValues = inputQueue.value ? inputQueue.value.split(/\r?\n/) : [];
-    const result = await pyodide.runPythonAsync(buildRunnerCode(editor.value, inputValues));
-    output.textContent = result.trimEnd() || "Your code ran, but it did not print anything yet.";
+    const rawResult = await pyodide.runPythonAsync(buildRunnerCode(activeRunCode, activeInputValues));
+    const result = JSON.parse(rawResult);
+
+    if (result.status === "input") {
+      updateConsole(result.output, result.prompt);
+      showConsoleInput(result.prompt);
+      setStatus("Python is waiting for your answer", "loading");
+      return;
+    }
+
+    if (result.status === "error") {
+      updateConsole(result.output, `BoaCode found something to fix:\n${result.error}`);
+      setStatus("Python needs attention", "error");
+      return;
+    }
+
+    updateConsole(result.output || "Your code ran, but it did not print anything yet.", "Program finished.");
     setStatus("Python is ready", "ready");
   } catch (error) {
-    output.textContent = `BoaCode could not run this program yet.\n\n${error.message}`;
+    updateConsole(`BoaCode could not run this program yet.\n\n${error.message}`);
     setStatus("Python needs attention", "error");
   } finally {
+    isRunning = false;
     runButton.disabled = false;
   }
 }
 
+async function runPython() {
+  activeRunCode = editor.value;
+  activeInputValues = [];
+  hideConsoleInput();
+  updateConsole("Running your Python code…");
+  await continueProgram();
+}
+
+async function submitConsoleInput(event) {
+  event.preventDefault();
+
+  if (!waitingForInput || isRunning) return;
+
+  activeInputValues.push(consoleInput.value);
+  hideConsoleInput();
+  await continueProgram();
+}
+
 function clearOutput() {
-  output.textContent = "Output cleared. Press Run Python when you are ready.";
+  activeInputValues = [];
+  waitingForInput = false;
+  hideConsoleInput();
+  output.textContent = "Console cleared. Press Run Python when you are ready.";
+  setStatus("Python is ready", "ready");
 }
 
 async function prepareRuntime() {
@@ -203,6 +279,7 @@ themeButtons.forEach((button) => {
 
 runButton.addEventListener("click", runPython);
 clearButton.addEventListener("click", clearOutput);
+consoleInputForm.addEventListener("submit", submitConsoleInput);
 
 applyTheme(getSavedTheme());
 renderExamples();

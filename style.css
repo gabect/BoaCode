@@ -1484,8 +1484,7 @@ code {
   grid-template-columns: minmax(230px, 0.75fr) minmax(0, 1.45fr) minmax(260px, 0.95fr);
   grid-template-areas:
     "intro intro intro"
-    "examples editor output"
-    "input editor output";
+    "examples editor output";
   min-height: 0;
   overflow: visible;
   padding: 1rem;
@@ -1547,10 +1546,6 @@ code {
   min-height: 620px;
 }
 
-.input-panel {
-  grid-area: input;
-}
-
 .lab-output-panel {
   grid-area: output;
   margin-left: 0;
@@ -1592,8 +1587,7 @@ code {
   outline: none;
 }
 
-.example-description,
-.input-note {
+.example-description {
   color: var(--muted);
   font-size: 0.9rem;
   font-weight: 700;
@@ -1601,7 +1595,6 @@ code {
 }
 
 .python-editor,
-.input-queue,
 .python-output {
   background: var(--code-bg);
   border: var(--ui-border-width) solid var(--code-border);
@@ -1613,20 +1606,12 @@ code {
   padding: 0.9rem;
 }
 
-.python-editor,
-.input-queue {
-  resize: vertical;
-  width: 100%;
-}
-
 .python-editor {
   flex: 1 1 auto;
   min-height: 480px;
+  resize: vertical;
   tab-size: 4;
-}
-
-.input-queue {
-  min-height: 140px;
+  width: 100%;
 }
 
 .python-output {
@@ -1638,7 +1623,7 @@ code {
 }
 
 .python-editor:focus,
-.input-queue:focus {
+.console-input-row input:focus {
   border-color: var(--orange);
   box-shadow: 0 0 0 4px var(--workspace-ring);
   outline: none;
@@ -1666,7 +1651,7 @@ code {
     grid-template-areas:
       "intro intro"
       "examples editor"
-      "input output";
+      "output output";
   }
 }
 
@@ -1696,7 +1681,6 @@ code {
       "intro"
       "examples"
       "editor"
-      "input"
       "output";
     padding: 0.9rem;
   }
@@ -1750,4 +1734,99 @@ code {
 .app-nav .nav-link {
   font-size: 0.8rem;
   padding: 0.4rem 0.55rem;
+}
+
+.lab-help-card {
+  background: color-mix(in srgb, var(--stage-bg) 74%, transparent);
+  border: var(--ui-border-width) solid var(--line);
+  border-radius: 16px;
+  margin-top: 0.9rem;
+  padding: 0.85rem;
+}
+
+.lab-help-card h3 {
+  font-size: 1rem;
+  margin-bottom: 0.35rem;
+}
+
+.lab-help-card p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+.python-console {
+  background: var(--dialogue-bg);
+  border: var(--ui-border-width) solid var(--line);
+  border-radius: calc(var(--panel-radius) - 8px);
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 520px;
+  padding: 0.75rem;
+}
+
+.python-output {
+  background: var(--code-bg);
+  flex: 1 1 auto;
+  margin: 0;
+  max-height: none;
+  min-height: 0;
+  white-space: pre-wrap;
+}
+
+.console-input-form {
+  background: var(--panel-strong);
+  border: var(--ui-border-width) solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--soft-shadow);
+  padding: 0.75rem;
+}
+
+.console-input-form label {
+  color: var(--ink);
+  display: block;
+  font-weight: 800;
+  margin-bottom: 0.45rem;
+}
+
+.console-input-row {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.console-input-row input {
+  background: var(--code-bg);
+  border: 1px solid color-mix(in srgb, var(--teal) 65%, var(--line));
+  border-radius: 12px;
+  color: var(--ink);
+  flex: 1;
+  min-height: 44px;
+  min-width: 0;
+  padding: 0.62rem 0.75rem;
+}
+
+body.theme-hacker .python-console {
+  background: #07110b;
+  border-color: rgba(128, 194, 137, 0.34);
+}
+
+body.theme-hacker .console-input-form {
+  background: #0f2218;
+}
+
+@media (max-width: 900px) {
+  .python-console {
+    min-height: 360px;
+  }
+}
+
+@media (max-width: 560px) {
+  .console-input-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }

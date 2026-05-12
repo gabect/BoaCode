@@ -66,6 +66,13 @@
         <p id="exampleDescription" class="example-description" aria-live="polite">
           Choose an example to learn what it does.
         </p>
+        <div class="lab-help-card">
+          <h3>How input() works</h3>
+          <p>
+            When your program asks a question, answer it in the Python Console on the right.
+            BoaCode keeps the prompt, your response, and the output together.
+          </p>
+        </div>
       </section>
 
       <section class="panel editor-panel" aria-labelledby="editor-title">
@@ -80,27 +87,24 @@
         <textarea id="pythonEditor" class="python-editor" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
       </section>
 
-      <section class="panel input-panel" aria-labelledby="input-title">
-        <div class="section-heading">
-          <h2 id="input-title">Input answers</h2>
-          <p>If your code uses input(), put each answer on its own line before running.</p>
-        </div>
-        <label class="sr-only" for="inputQueue">Answers for input calls</label>
-        <textarea id="inputQueue" class="input-queue" placeholder="Example:\nAda\nblue\n4"></textarea>
-        <p class="input-note">
-          BoaCode will read these answers in order and show the question plus answer in the output.
-        </p>
-      </section>
-
       <section class="panel output-panel lab-output-panel" aria-labelledby="lab-output-title">
         <div class="section-heading workspace-heading">
           <div>
-            <h2 id="lab-output-title">Friendly output</h2>
-            <p>Results and helpful error messages appear here.</p>
+            <h2 id="lab-output-title">Python Console</h2>
+            <p>Printed output, input questions, answers, and errors stay together here.</p>
           </div>
           <button id="clearOutputButton" class="reset-layout-button" type="button">Clear Output</button>
         </div>
-        <pre id="pythonOutput" class="python-output" aria-live="polite">Press Run Python to see your program output here.</pre>
+        <div class="python-console" aria-live="polite">
+          <pre id="pythonOutput" class="python-output">Press Run Python to start. If your code uses input(), answer in this console.</pre>
+          <form id="consoleInputForm" class="console-input-form hidden">
+            <label id="consoleInputLabel" for="consoleInput">Answer the Python question</label>
+            <div class="console-input-row">
+              <input id="consoleInput" type="text" autocomplete="off" />
+              <button class="send-button" type="submit">Send</button>
+            </div>
+          </form>
+        </div>
       </section>
     </main>
 
