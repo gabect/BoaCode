@@ -3,170 +3,21 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>BoaCode Blocks</title>
+    <title>BoaCode</title>
     <link rel="stylesheet" href="style.css" />
-    <!-- Google Blockly powers the simple block workspace. -->
-    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
   </head>
-  <body class="theme-cartoon">
-    <header class="app-topbar">
-      <div class="brand-cluster" aria-label="BoaCode activity">
-        <img class="brand-logo" src="img/boa(code)2.png" alt="BoaCode" />
-        <div class="brand-copy">
-          <h1 class="brand-tagline">Build logic before writing code</h1>
-          <p class="brand-subtitle">Block coding inspired by Python</p>
-        </div>
-      </div>
-
-      <div class="topbar-actions">
-        <button
-          id="characterButton"
-          class="character-button"
-          type="button"
-          aria-haspopup="dialog"
-          aria-controls="characterDialog"
-        >
-          <span class="character-button-avatar" aria-hidden="true">🤖</span>
-          <span class="character-button-label">Character: <strong id="characterButtonName">Robot</strong></span>
-          <span class="dropdown-arrow" aria-hidden="true">▾</span>
-        </button>
-
-        <div class="theme-selector" aria-label="Choose a visual theme">
-          <span class="theme-selector-label">Theme</span>
-          <div class="theme-options" role="group" aria-label="Visual themes">
-            <button class="theme-button active" type="button" data-theme="cartoon" aria-pressed="true">
-              Cartoon Adventure
-            </button>
-            <button class="theme-button" type="button" data-theme="modern" aria-pressed="false">
-              Modern Computers
-            </button>
-            <button class="theme-button" type="button" data-theme="hacker" aria-pressed="false">
-              Hacker Mode
-            </button>
-          </div>
-        </div>
-
-        <button id="runButton" class="run-button" type="button">Run Blocks</button>
-      </div>
-    </header>
-
-    <main class="app-shell" id="appShell">
-      <section class="panel workspace-panel" aria-labelledby="workspace-title">
-        <div class="section-heading workspace-heading">
-          <div>
-            <h2 id="workspace-title">Arrange the blocks</h2>
-            <p>Build a simple conversation, then run it from the top bar.</p>
-          </div>
-        </div>
-        <div id="blocklyDiv" aria-label="Blockly coding workspace"></div>
-      </section>
-
-      <div
-        id="splitDivider"
-        class="split-divider"
-        role="separator"
-        aria-label="Resize Blockly workspace and result panels"
-        aria-orientation="vertical"
-        aria-valuemin="58"
-        aria-valuemax="82"
-        tabindex="0"
-      >
-        <span class="divider-handle" aria-hidden="true"></span>
-      </div>
-
-      <section class="panel output-panel" aria-labelledby="output-title">
-        <div class="section-heading output-heading">
-          <div>
-            <h2 id="output-title">Read the result</h2>
-            <p>Watch the selected character ask questions and speak your output.</p>
-          </div>
-        </div>
-
-        <article class="dialogue-card" aria-live="polite">
-          <div class="character-stage">
-            <div class="avatar-frame" id="speakerAvatar" aria-hidden="true">🤖</div>
-            <div>
-              <p class="stage-label">Now speaking</p>
-              <h3 id="speakerName">Robot</h3>
-            </div>
-          </div>
-
-          <div id="dialogueOutput" class="dialogue-stream">
-            <div class="speech-bubble narrator-bubble">
-              Run the blocks to start the classroom conversation.
-            </div>
-          </div>
-
-          <form id="dialogueInputForm" class="dialogue-input hidden">
-            <label id="dialogueInputLabel" for="dialogueInput">Type your answer</label>
-            <div class="dialogue-input-row">
-              <input id="dialogueInput" type="text" autocomplete="off" />
-              <button class="send-button" type="submit">Reply</button>
-            </div>
-          </form>
-        </article>
-
-        <div class="panel-tools" aria-label="Layout tools">
-          <button id="resetLayoutButton" class="reset-layout-button" type="button">Reset panels</button>
-        </div>
-
-        <details class="code-disclosure">
-          <summary>Teacher View: Code Behind the Blocks</summary>
-          <pre id="codeOutput"><code># Run your blocks to see code here.</code></pre>
-        </details>
+  <body class="theme-cartoon landing-page">
+    <main class="landing-shell" aria-labelledby="landing-title">
+      <section class="landing-card">
+        <img class="landing-logo" src="img/boa(code)2.png" alt="BoaCode logo" />
+        <p class="eyebrow">Block coding for Python thinkers</p>
+        <h1 id="landing-title">Meet BoaCode</h1>
+        <p class="landing-copy">
+          BoaCode helps learners build logic with friendly blocks while introducing ideas inspired by
+          Python. Arrange commands, run your program, and see how block coding can grow into written code.
+        </p>
+        <a class="start-coding-button" href="app.html">Start Coding</a>
       </section>
     </main>
-
-    <dialog id="characterDialog" class="character-dialog" aria-labelledby="character-dialog-title">
-      <form method="dialog" class="character-dialog-card">
-        <div class="dialog-heading">
-          <div>
-            <p class="eyebrow">Character picker</p>
-            <h2 id="character-dialog-title">Choose who reads the result</h2>
-          </div>
-          <button class="dialog-close-button" type="submit" aria-label="Close character picker">×</button>
-        </div>
-
-        <div class="character-grid dialog-character-grid" role="radiogroup" aria-label="Character choices">
-          <button class="character-card selected" type="button" data-character="Robot" aria-pressed="true">
-            <span class="character-face" aria-hidden="true">🤖</span>
-            <span>Robot</span>
-          </button>
-          <button class="character-card" type="button" data-character="Detective" aria-pressed="false">
-            <span class="character-face" aria-hidden="true">🕵️</span>
-            <span>Detective</span>
-          </button>
-          <button class="character-card" type="button" data-character="Wizard" aria-pressed="false">
-            <span class="character-face" aria-hidden="true">🧙</span>
-            <span>Wizard</span>
-          </button>
-          <button class="character-card" type="button" data-character="Astronaut" aria-pressed="false">
-            <span class="character-face" aria-hidden="true">👩‍🚀</span>
-            <span>Astronaut</span>
-          </button>
-        </div>
-
-        <button class="cancel-button" type="submit">Cancel</button>
-      </form>
-    </dialog>
-
-    <xml id="toolbox" style="display: none">
-      <category name="Starter Blocks" colour="#d85f33">
-        <button text="Create variable" callbackKey="CREATE_VARIABLE"></button>
-        <block type="boa_set"></block>
-        <block type="boa_get"></block>
-        <block type="boa_text"></block>
-        <block type="boa_print"></block>
-        <block type="boa_input"></block>
-        <block type="boa_lower"></block>
-        <block type="boa_join_text"></block>
-        <block type="boa_equals"></block>
-        <block type="boa_and"></block>
-        <block type="boa_or"></block>
-        <block type="boa_if_else"></block>
-      </category>
-    </xml>
-
-    <script src="script.js"></script>
   </body>
 </html>

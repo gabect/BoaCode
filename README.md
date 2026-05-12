@@ -39,6 +39,7 @@ execute real Python.
 
 ```text
 index.html
+app.html
 style.css
 script.js
 README.md
@@ -46,8 +47,9 @@ README.md
 
 ## Run locally
 
-Open `index.html` in a browser, or serve the folder with any simple static file
-server.
+Open `index.html` in a browser to view the landing page, then use the
+“Start Coding” link to open `app.html`. You can also serve the folder with any
+simple static file server.
 
 Example with Python:
 
