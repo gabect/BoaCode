@@ -7,16 +7,40 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body class="theme-cartoon landing-page">
+    <header class="landing-nav" aria-label="BoaCode navigation">
+      <a class="nav-logo-link" href="index.html" aria-label="BoaCode home">
+        <img class="nav-logo" src="img/boa(code)2.png" alt="BoaCode logo" />
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a class="nav-link active" href="index.html" aria-current="page">Home</a>
+        <a class="nav-link" href="app.html">Blocks</a>
+        <a class="nav-link" href="python-lab.html">Python Lab</a>
+      </nav>
+    </header>
+
     <main class="landing-shell" aria-labelledby="landing-title">
-      <section class="landing-card">
+      <section class="landing-card platform-card">
         <img class="landing-logo" src="img/boa(code)2.png" alt="BoaCode logo" />
-        <p class="eyebrow">Block coding for Python thinkers</p>
+        <p class="eyebrow">Two paths for Python thinkers</p>
         <h1 id="landing-title">Meet BoaCode</h1>
         <p class="landing-copy">
-          BoaCode helps learners build logic with friendly blocks while introducing ideas inspired by
-          Python. Arrange commands, run your program, and see how block coding can grow into written code.
+          BoaCode helps learners build logic with friendly blocks, then grow into real Python in a
+          simple browser-based lab. Choose the path that fits your classroom moment.
         </p>
-        <a class="start-coding-button" href="app.html">Start Coding</a>
+
+        <div class="tool-card-grid" aria-label="BoaCode learning paths">
+          <a class="tool-card" href="app.html">
+            <span class="tool-card-icon" aria-hidden="true">🧩</span>
+            <span class="tool-card-title">Start with Blocks</span>
+            <span class="tool-card-copy">Practice logic visually with Python-inspired blocks.</span>
+          </a>
+
+          <a class="tool-card" href="python-lab.html">
+            <span class="tool-card-icon" aria-hidden="true">🐍</span>
+            <span class="tool-card-title">Open Python Lab</span>
+            <span class="tool-card-copy">Write and run beginner Python code in your browser.</span>
+          </a>
+        </div>
       </section>
     </main>
   </body>
